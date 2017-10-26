@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : uTapeEmulator v2
+**  Program  : uTapeEmulator v3
 **  Copyright (c) 2017 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
@@ -36,6 +36,7 @@
 #define _FFWD_BUTTON    16      // D0
 
 #define _DATAROOT        "/KIM"
+#define _DIMOLEDTIME    300000  // five minutes
 
 
 // Initialize the OLED display using Wire library
@@ -54,7 +55,7 @@ char            ascii[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','
 
 int16_t         progCounter;
 
-uint32_t        getTimingDuration;
+uint32_t        getTimingDuration, dimOledTimer;
 uint32_t        bitStartTime, bitTime;
 byte            actByte;
 int8_t          fileNum = 0;
@@ -66,6 +67,7 @@ int16_t         tmpB, idxDesc;
 uint32_t        scrollInterval;
 char            buttonChoice, mChoice;
 bool            doVerbose = false;
+bool            displayIsOff;
 
 // Prints out Binary value (1 or 0) of byte
 void printByte(int c) {
@@ -311,6 +313,38 @@ void setProgDetails(uint8_t fileNum) {
 }   // setProgDetails()
 
 
+void turnOffOledDisplay() {
+    display.clear();
+    display.display();
+    displayIsOff = true;
+    
+}   // turnOffOledDisplay()
+
+
+void turnOnOledDisplay() {
+    
+    display.init();
+    display.flipScreenVertically();
+    display.setFont(ArialMT_Plain_10);
+
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.setFont(ArialMT_Plain_10);      // _24
+    display.drawString(0, 0, "micro KIM");
+    display.setTextAlignment(TEXT_ALIGN_CENTER);
+    display.setFont(ArialMT_Plain_16);
+    display.drawString(64, 12, "Solid State");
+    display.drawString(64, 31, "Tape Device");
+    display.setTextAlignment(TEXT_ALIGN_LEFT);
+    display.setFont(ArialMT_Plain_10);      // _16/_24
+    display.drawString(0, 52, "(c) Willem Aandewiel");
+    display.display();
+    displayIsOff = false;
+    delay(2000);
+    dimOledTimer = millis() + _DIMOLEDTIME;
+
+}   // turnOnOledDisplay()
+
+
 void displayErrorMsg(String Msg, uint8_t wait) {
     yield();
     sprintf(scrollDesc, Msg.c_str());
@@ -327,6 +361,7 @@ void displayErrorMsg(String Msg, uint8_t wait) {
     }
     
 }   // displayErrorMsg()
+
 
 void displayMsg(String Msg) {
     displayErrorMsg(Msg, 0);
@@ -435,20 +470,10 @@ void setup() {
     Serial.println();
     Serial.println("\n[uTapeEmulator (v2)]");
     Serial.flush();
-    
-    display.init();
-    display.flipScreenVertically();
-    display.setFont(ArialMT_Plain_10);
 
-    //dspl_Init();
-    display.setTextAlignment(TEXT_ALIGN_LEFT);
-    display.setFont(ArialMT_Plain_24);
-    display.drawString(0, 0, "microKIM");
-    display.setFont(ArialMT_Plain_16);
-    display.drawString(0, 30, "uTapeEmulator");
-    display.display();
-    delay(2000);
-    
+    turnOnOledDisplay();
+    delay(1000);
+
     pinMode(_LED_PIN, OUTPUT);
     digitalWrite(_LED_PIN, HIGH);
     pinMode(_TAPE_IN_PIN, INPUT);
@@ -474,10 +499,13 @@ void setup() {
 
 void loop() {
     char cIn = 0;
-    
+
     while (cIn != '\r' && cIn != '\n' && !buttonPressed()) {
         yield();
-        if (millis() > scrollInterval) {
+        if (millis() > dimOledTimer) {
+            turnOffOledDisplay();
+        
+        } else if (millis() > scrollInterval) {
             if (idxDesc == 0) scrollInterval = millis() + 3000;
             else              scrollInterval = millis() + 250;
             scrollProgDesc();
@@ -494,52 +522,64 @@ void loop() {
         buttonChoice = 0;
     }
     if (mChoice != 0) {
-        Serial.printf(" choise is [%c]\n", mChoice);
-        switch (mChoice) {
-            case 'd':
-            case 'D':   setDescription(fileNum);
-                        setProgDetails(fileNum);
-                        printMenu();
-                        break;
-            case 'l':
-            case 'L':   lsFiles(true);
-                        printMenu();
-                        break;
-            case 'p':
-            case 'P':   playbackTape();
-                        printMenu();
-                        break;
-            case 'r':
-            case 'R':   recordTape();
-                        setProgDetails(fileNum);
-                        printMenu();
-                        break;
-            case 't':
-            case 'T':   tockelLock(fileNum);
-                        printMenu();
-                        break;
-            case 'v':
-            case 'V':   doVerbose = !doVerbose;
-                        printMenu();
-                        break;
-            case '+':   sprintf(filePath, "%s/prgs/%s.hex", _DATAROOT, progDetails.ID);
-                        if (SPIFFS.exists(filePath)) {
-                            fileNum++;
-                        }
-                        if (fileNum > 0xFF) fileNum = 0xFF;
-                        setProgDetails(fileNum);
-                        scrollInterval = millis();
-                        printMenu();
-                        break;
-            case '-':   fileNum--;
-                        if (fileNum < 0) fileNum = 0;
-                        setProgDetails(fileNum);
-                        scrollInterval = millis();
-                        printMenu();
-                        break;
-            default:    printMenu();
+        if (displayIsOff) {
+            switch (mChoice) {
+                case '+':
+                case '-':   turnOnOledDisplay();
+                            printMenu();
+                            mChoice = 0;
+            }
+            
+        } else {
+
+            Serial.printf(" choise is [%c]\n", mChoice);
+            switch (mChoice) {
+                case 'd':
+                case 'D':   setDescription(fileNum);
+                            setProgDetails(fileNum);
+                            printMenu();
+                            break;
+                case 'l':
+                case 'L':   lsFiles(true);
+                            printMenu();
+                            break;
+                case 'p':
+                case 'P':   playbackTape();
+                            printMenu();
+                            break;
+                case 'r':
+                case 'R':   recordTape();
+                            setProgDetails(fileNum);
+                            printMenu();
+                            break;
+                case 't':
+                case 'T':   tockelLock(fileNum);
+                            printMenu();
+                            break;
+                case 'v':
+                case 'V':   doVerbose = !doVerbose;
+                            printMenu();
+                            break;
+                case '+':   sprintf(filePath, "%s/prgs/%s.hex", _DATAROOT, progDetails.ID);
+                            if (SPIFFS.exists(filePath)) {
+                                fileNum++;
+                            }
+                            if (fileNum > 0xFF) fileNum = 0xFF;
+                            setProgDetails(fileNum);
+                            scrollInterval = millis();
+                            printMenu();
+                            break;
+                case '-':   fileNum--;
+                            if (fileNum < 0) fileNum = 0;
+                            setProgDetails(fileNum);
+                            scrollInterval = millis();
+                            printMenu();
+                            break;
+                default:    printMenu();
+            }
+            mChoice = 0;
+            dimOledTimer = millis() + _DIMOLEDTIME;
         }
-        mChoice = 0;
     }
     
 }   // loop()
@@ -566,4 +606,3 @@ void loop() {
 * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 * 
 ***************************************************************************/
-
