@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : uTapeEmulator v3
+**  Program  : uTapeEmulator v4
 **  Copyright (c) 2017 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
@@ -325,7 +325,8 @@ void turnOnOledDisplay() {
     
     display.init();
     display.flipScreenVertically();
-    display.setFont(ArialMT_Plain_10);
+    display.display();
+    //display.setFont(ArialMT_Plain_10);
 
     display.setTextAlignment(TEXT_ALIGN_LEFT);
     display.setFont(ArialMT_Plain_10);      // _24
