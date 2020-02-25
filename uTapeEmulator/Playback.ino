@@ -105,7 +105,7 @@ void playbackTape() {
         sendOneByte(0x16);
     }
 
-    dPrint("Send '*' (0xA2)");
+    dPrint("Send '*' (0x2A)");
     sendOneByte('*');
     dPrintln("\n---------------------------------");
 
