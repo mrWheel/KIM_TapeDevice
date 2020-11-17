@@ -1,18 +1,24 @@
 /*
 ***************************************************************************  
-**  Program  : uTapeEmulator v4
-**  Copyright (c) 2017 Willem Aandewiel
-**
-**  TERMS OF USE: MIT License. See bottom of file.                                                            
+ *  Program  : uTapeEmulator v4
+ *  Copyright (c) 2017 Willem Aandewiel
+ *  
+ *  Date     : 17-11-2020
+ *
+ *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
-*/
+ * Board:         "Generic ESP8266 Module"
+ * Builtin Led:   "2"
+ * CPU Frequency: "80 MHz"
+ * Flash Size:    "4MB (FS:2MB OTA:~1019KB)"
+***************************************************************************/  
 
 #include <ESP.h>
 #include <ESP8266WiFi.h>
 #include <FS.h>
 #include <SSD1306.h>
 
-#define _BV(bit)            (1 << (bit))
+//#define _BV(bit)            (1 << (bit))
 #define _SET(a,b)           ((a) |= _BV(b))
 #define _CLEAR(a,b)         ((a) &= ~_BV(b))
 
@@ -38,6 +44,8 @@
 #define _DATAROOT        "/KIM"
 #define _DIMOLEDTIME    300000  // five minutes
 
+#define DISPLAY_WIDTH   128
+#define DISPLAY_HEIGHT   64
 
 // Initialize the OLED display using Wire library
 SSD1306  display(0x3c, _SDA, _SCL);
