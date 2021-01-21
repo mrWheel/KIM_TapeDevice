@@ -1,0 +1,121 @@
+<!DOCTYPE HTML> <!-- For more information visit: https://fipsok.de -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="littleFSexplorer.css">
+    <title>Filesystem Manager</title>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+	      list(JSON.parse(localStorage.getItem('sortBy')));
+		    format.addEventListener('click', () => {
+	        if (!confirm(`Do you really want to format? All data will be lost.\nYou need to upload littleFSexplorer.html.`)) event.preventDefault();   
+	      });
+		    listFS.addEventListener('click', () => {});
+		    updateFW.addEventListener('click', () => {});
+	  });
+	  function list(to)
+	  {  
+		  let myList = document.querySelector('main'), noted = '';
+        fetch(`?sort=${to}`).then( (response) => {
+          return response.json();
+        }).then((json) => {
+		      myList.innerHTML = '<nav><input type="radio" id="/" name="group" checked="checked"><label for="/"> &#128193;</label><span id="cr">+&#128193;</nav></span><span id="si"></span>';
+		      document.querySelector('form').setAttribute('action', '/upload?f=');
+          for (var i = 0; i < json.length - 1; i++) 
+          {
+            let dir = '', f = json[i].folder, n = json[i].name;
+		        if (f != noted) 
+		        {
+			        noted = f;
+			        dir += `<nav><input type="radio" id="${f}" name="group"><label for="${f}"></label> &#128193; ${f} <a href="?delete=/${f}">&#x1f5d1;&#xfe0f;</a></nav>`;
+			      }
+            if (n != '') 
+            {
+              dir += `<div class="row">`
+            //dir += `<div class="colFname linkFname"><a href="${f}/${n}" target="_blank">${n}</a></div>`;
+              dir += `<div class="colFname">${n}</div>`;
+              dir += `<div class="colFsize"><small>${json[i].size}</small></div>`;
+              dir += `<div class="colButton linkButton"><a href="${f}/${n}"download="${n}">&nbsp;Download&nbsp;</a></div>`;
+              dir += `<div class="colButton linkButton"><a href="?delete=${f}/${n}">&nbsp;Delete&nbsp;</a></div>`;
+              dir += `</div>`
+            }
+            myList.insertAdjacentHTML('beforeend', dir);
+          }
+
+          myList.insertAdjacentHTML('beforeend', `<br/><li><b id="so">${to ? '&#9660;' : '&#9650;'} LittleFS</b> uses ${json[i].usedBytes.replace(".00", "")} of ${json[i].totalBytes.replace(".00", "")}`);
+          var free = json[i].freeBytes;
+		      cr.addEventListener('click', () => {
+			      document.getElementById('no').classList.toggle('no');
+		      });
+		      so.addEventListener('click', () => {
+			      list(to=++to%2);
+			      localStorage.setItem('sortBy', JSON.stringify(to));
+		      });
+		      document.addEventListener('change', (e) => {
+		        if (e.target.id == 'fs') 
+		        {
+		  	      for (var bytes = 0, i = 0; i < event.target.files.length; i++) bytes += event.target.files[i].size;
+                for (var output = `${bytes} Byte`, i = 0, circa = bytes / 1024; circa > 1; circa /= 1024) output = circa.toFixed(2) + [' KB', ' MB', ' GB'][i++];
+                  if (bytes > free) 
+                  {
+                    si.innerHTML = `<li><b> ${output}</b><strong> Not enough space</strong></li>`;
+                    up.setAttribute('disabled', 'disabled');
+                  } 
+                  else 
+                  {
+        			     si.innerHTML = `<li><b>Filesize:</b> ${output}</li>`;
+                    up.removeAttribute('disabled');
+                  }
+			      }
+            document.querySelectorAll(`input[type=radio]`).forEach(el => { 
+              if (el.checked) document.querySelector('form').setAttribute('action', '/upload?f=' + el.id)
+            });
+          });
+    		  document.querySelectorAll('[href^="?delete=/"]').forEach(node => {
+            node.addEventListener('click', () => {
+	            if (!confirm('Are you sure???')) event.preventDefault();
+		    	  });
+		      });
+	      });
+      } //  list(to)
+    </script>
+  </head>
+  <body>
+    <h2>ESP8266 Filesystem Manager</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+	    <input id="fs" type="file" name="up[]" multiple>
+      <input id="up" type="submit" value="Upload" disabled>
+    </form>
+	  <form id="no" class="no" method="POST">
+	    <input name="new" placeholder="Map Name" pattern="[^\x22/%&\\:;]{1,31}" title="Chars &#8220; % & / : ; \  not allowed." required="">
+	    <button>Create</button>
+	  </form>
+    <main></main>
+  <div style='width: 30%'>
+    <form style='float: left;' action='/' method='POST'>
+  	  <button id="Exit">Exit FSexplorer</button>
+    </form>
+    <form style='float: right;' action="/listFS" method="POST">
+  	  <button id="listFS">List LittleFS</button>
+	</form>
+  </div>
+
+    <div style='width: 30%'>
+    <form style='float: left;' action='/update' method='POST'>
+  	  <button id="updateFW">Update Firmware</button>
+    </form>
+    <form style='float: right;' action="/ReBoot" method="POST">
+  	  <button id="ReBoot">Reboot</button>
+	</form>
+  </div>
+	
+  <div style='width: 30%'>
+    <form style='float: left;' action="/format" method="POST" disabled>
+	    <button id="format" disabled>Format LittleFS</button>
+	  </form>
+  </div>
+  <div style='width: 80%'>&nbsp;</div>
+
+  </body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My HTML Document</title>
+    <style>
+
+body {
+  margin: 0;
+  height: 100vh;  /*100% view height */
+  width: 100vw;   /* 100% view width */
+  background: lightblue;
+} 
+
+
+.header-nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex-content: center;
+  width: 100%;
+  height: 50px;
+  border: 1px solid black;
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: auto;
+}
+.navRight { 
+  font-size: 1.8em;
+  position: right; 
+  right: 0;
+  height: 0;
+}
+.navRight:hover { 
+  font-size: 2.1em;
+  position: right; 
+  right: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 800px;
+  justify-content: center;
+}
+  
+.box.flex {
+  display: flex;
+}
+
+.box {
+  flex: 0 0 600px;
+  border-radius: 4px;
+}
+
+
+.box.left  {
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.box.center  {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.box.right  {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.id {
+  display: flex;
+  flex: 1 1 600px;
+  justify-content: center;
+  align-items: center;   /* <---- NEW    */
+}
+.id-child {
+    flex: 1 1 500px;
+    width: 500px;
+    text-align: right;
+}
+
+.id-child:first-child {
+    flex: 1 1 100px;
+    width: 100px;
+    font-size: 55pt;
+    text-align: center;
+    height: 100px;
+    border: 2px solid black;
+}
+
+.name {
+  display: flex;
+  flex: 1 1 600px;
+  order: 2;
+  height: 50px;
+  justify-content: center;
+  align-items: center;   /* <---- NEW    */
+}
+.name-child {
+    flex: 1 1 100px;
+    width: 100px;
+    text-align: right;
+}
+
+.name-child:first-child {<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My HTML Document</title>
+    <style>
+
+body {
+  margin: 0;
+  height: 100vh;  /*100% view height */
+  width: 100vw;   /* 100% view width */
+  background: lightblue;
+} 
+
+
+.header-nav {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  flex-content: center;
+  width: 100%;
+  height: 50px;
+  border: 1px solid black;
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  flex-basis: 100%;
+  flex: auto;
+}
+.navRight { 
+  font-size: 1.8em;
+  position: right; 
+  right: 0;
+  height: 0;
+}
+.navRight:hover { 
+  font-size: 2.1em;
+  position: right; 
+  right: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: row;
+  flex: 1 0 800px;
+  justify-content: center;
+}
+  
+.box.flex {
+  display: flex;
+}
+
+.box {
+  flex: 0 0 600px;
+  border-radius: 4px;
+}
+
+
+.box.left  {
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.box.center  {
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.box.right  {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.id {
+  display: flex;
+  flex: 1 1 600px;
+  justify-content: center;
+  align-items: center;   /* <---- NEW    */
+}
+.id-child {
+    flex: 1 1 500px;
+    width: 500px;
+    text-align: right;
+}
+
+.id-child:first-child {
+    flex: 1 1 100px;
+    width: 100px;
+    font-size: 55pt;
+    text-align: center;
+    height: 100px;
+    border: 2px solid black;
+}
+
+.name {
+  display: flex;
+  flex: 1 1 600px;
+  order: 2;
+  height: 50px;
+  justify-content: center;
+  align-items: center;   /* <---- NEW    */
+}
+.name-child {
+    flex: 1 1 100px;
+    width: 100px;
+    text-align: right;
+}
+
+.name-child:first-child {
+    flex: 1 1 500px;
+    width: 500px;
+    display: inline-block;
+    text-align: left;
+}
+
+
+.bottom { 
+  position: fixed;
+  order: 3;
+  font-size: small;
+  color: gray;
+  bottom:0;
+} 
+.right-0  {right: 0; padding-right: 10px; }
+.left-0   {left:  0; padding-left:  10px; }
+
+.footer {
+   position: fixed;
+   left: 0;
+   bottom: 0;
+   width: 100%;
+   color: gray;
+   font-size: small;
+   text-align: right;
+}
+
+input[type='text'] {
+  font-size: 20px; 
+  font-family: monospace; 
+  vertical-align: center;
+} 
+
+</style>
+</head>
+
+<body>
+     <!-- header -->
+    <header class="header">
+      <div class="header-nav" style="background-color: skyblue;">
+        <div class="columns" style="font-size:20pt">&nbsp; &micro;Tape</div>
+        <div class='navRight'>
+          <a id='M_FSexplorer'>&#128194; &nbsp;</a>
+        </div>
+      </div>  <!-- header-nav -->
+      <br/>
+  </header>
+  
+  <!-- ID / Mode / Start -->
+  <section class="content">
+    <div class="box flex">
+      <div class="id">
+        <div id="ID" class="id-child">
+          EC
+        </div>
+        <div class="id-child">
+        <span id="Mode">Mode</span>
+        <br>
+        </span id="Strt">Start</span>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Name / buttonEdit -->
+  <section class="content">
+    <div class="box flex">
+      <div class="name">
+        <div class="name-child">
+          <input type="text"  maxlength="24" value="invullen">
+        </div>
+        <div class="name-child">
+          <button id="buttonFRev"  class="col.Button button" onclick="handleButton('FREV')">&#128190;</button>
+          
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- button's -->
+  <section class="content">
+    <div class="box flex">
+      <div class="name">
+          <button id="buttonFRev"  class="col.Button button" onclick="handleButton('FREV')">&#9198;</button>
+          <button id="buttonRec"   class="col.Button button" onclick="handleButton('REC')">&#9210;</button>
+          <button id="buttonPlay"  class="col.Button button" onclick="handleButton('PLAY')">&#9199;</button>
+          <button id="buttonFFrwd" class="col.Button button" onclick="handleButton('FFWRD')">&#9197;</button>
+      </div>
+    </div>
+  </section>
+  <hr>
+        
+  <!--
+  <div class="footer">
+    <div[version]>[version]</div>
+    <span>2021 &copy; Willem Aandewiel &nbsp; &nbsp;</span>
+  </div>
+  -->
+  
+  <!-- Pin to bottom right corner -->
+  <div class="bottom right-0">2020 &copy; Willem Aandewiel</div>
+
+  <!-- Pin to bottom left corner -->
+  <div id="message" class="bottom left-0">[version]</div>
+
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML> <!-- For more information visit: https://fipsok.de -->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="index.css">
+    <script src="/index.js"></script>
+    <title>&#181;Tape Emulator</title>
+  </head>
+  <body>
+    <div id="displayMainPage"      style="display:none">
+      <div class="main" style="background-color: skyblue;">
+        <div class="col" style="font-size:20pt">&nbsp; &#181;Tape</div>
+        <div class='navRight'>
+          <a id='M_FSexplorer'>&#128194; &nbsp;</a>
+        </div>
+      </div>  <!-- main -->
+      <br/>
+    </div>  <!-- displayMainPage -->
+    <div class="container">
+    <!------------------------------------------------------------------------->
+      <div class="mainRow">
+        <div class="row"> <!-- row 1 -->
+          <div class="col70px"></div> <!-- space Left -->
+          <div id="ID" class="col70pxBorder" style="font-size:30pt">ID</div>
+          <div class="col"> <!-- col A -->
+            <div class="row">
+              <div id="Lock" class="col200px">Lock</div>
+            </div>
+            <div class="row">
+              <div id="Strt" class="col200px">STRT</div>
+            </div>
+          </div> <!-- col A -->
+        </div>  <!-- row 1 -->
+        <div class="row"><p></div> <!-- row -->
+        <div class="row"> <!-- row 2 -->
+          <div class="col70px"></div> <!-- space Left -->
+          <!--<div id="Name" class="col" style="font-size:15pt;">File Name</div>-->
+          <div class="col" style="font-size:15pt;">
+              <input id="Name" type="text" maxlength="24" value="File Name">
+          </div>
+          <button id="buttonNameEdit"  class="colButton button" onclick="handleButton('nameEdit')">&#128190;</button>
+          <div class="col"></div> <!-- space Right -->
+        </div>  <!-- row 2 -->
+        </br>
+        </br>
+        </br>
+        <div class="rowNavi">
+          <div class="col70px">&nbsp;</div> <!-- space left -->
+          <button id="buttonFRev"  class="colButton button" onclick="handleButton('FREV')">&#9198;</button>
+          <button id="buttonRec"   class="colButton button" onclick="handleButton('REC')">&#9210;</button>
+          <button id="buttonPlay"  class="colButton button" onclick="handleButton('PLAY')">&#9199;</button>
+          <button id="buttonFFrwd" class="colButton button" onclick="handleButton('FFWRD')">&#9197;</button>
+          <div class="col">&nbsp;</div> <!-- space right -->
+        </div>  <!-- row -->
+        </br>
+      </div>  <!-- mainRow -->
+    <!------------------------------------------------------------------------->
+    </div>  <!-- container -->
+</br>
+<HR>
+</br>
+    <div class="container">
+    <!------------------------------------------------------------------------->
+      <div class="mainRow">
+        <div class="row">
+          <div class="col70px"></div> <!-- space Left -->
+          <div class="col" id="Description" style="width:600px; font-size:120%; white-space: pre-line;">
+          </div>
+          <div class="col"></div> <!-- space Right -->
+        </div>  <!-- row -->      
+      </div>  <!-- mainRow -->
+    <!------------------------------------------------------------------------->
+    </div>  <!-- container -->
+    </br>
+    <div id="messArea">
+      <div id="waiting"></div>
+    </div>
+        
+    <div class="footer">
+      <div id="devVersion">[version]</div>
+      <span>2021 &copy; Willem Aandewiel &nbsp; &nbsp;</span>
+    </div>
+
+  </body>
+</html>

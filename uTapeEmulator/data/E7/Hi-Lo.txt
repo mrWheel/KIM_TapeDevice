@@ -1,0 +1,5 @@
+From the First Book of KIM
+
+It is a game to guess a number in the minumal try's possible.
+
+Nice!

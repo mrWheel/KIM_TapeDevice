@@ -11,6 +11,7 @@
 #define _LONG    (_SHORT * 2)
 
 
+//------------------------------------------------------
 byte char2Byte(char cIn) {
     byte iByte;
 
@@ -26,6 +27,7 @@ byte char2Byte(char cIn) {
 }   // char2Byte()
 
 
+//------------------------------------------------------
 void sendOneBit(boolean cBit) {
 
     if (cBit) {
@@ -44,6 +46,7 @@ void sendOneBit(boolean cBit) {
 } // sendOneBit()
 
 
+//------------------------------------------------------
 void sendOneByte(byte cByte) {
     uint8_t mask;
        
@@ -60,6 +63,7 @@ void sendOneByte(byte cByte) {
 }   // sendOneByte()
 
 
+//------------------------------------------------------
 void sendTwoAscii(byte cByte) {
     uint8_t mask;
        
@@ -88,35 +92,45 @@ void sendTwoAscii(byte cByte) {
 }   // sendTwoAscii()
 
 
-void playbackTape() {
-    
-    Serial.println("\nPlaying Tape\n");
-    displayMsg("Playing ...");
+//------------------------------------------------------
+void playbackTape() 
+{    
+  SPrint("\r\nPlaying Tape ");
+  displayMsg("Playing ...");
 
-    sprintf(filePath, "%s/prgs/%s.hex", _DATAROOT, progDetails.ID);
-    File dataFile = SPIFFS.open(String(filePath), "r");
+  sprintf(filePath, "/%s/%s.hex", progDetails.ID, progDetails.Name);
+  SPrintf("[%s]\r\n\n", filePath);
+  File dataFile = LittleFS.open(filePath, "r");
 
-    getTimingDuration = millis() + 3000;
-    dPrintln("Send SYNC (0x16) for 3 seconds");
-    while (millis() < getTimingDuration) {
-        yield();
-        // SYNC 0x16
-        // 0b00010110
-        sendOneByte(0x16);
-    }
+  if (!dataFile)
+  {
+    SPrintln("Error: File not found!!");
+    return;
+  }
 
-    dPrint("Send '*' (0x2A)");
-    sendOneByte('*');
-    dPrintln("\n---------------------------------");
+  getTimingDuration = millis() + 3000;
+  SPrintln("Send SYNC (0x16) for 3 seconds");
+  while (millis() < getTimingDuration) 
+  {
+    yield();
+    // SYNC 0x16
+    // 0b00010110
+    sendOneByte(0x16);
+  }
 
-    tmpB = 0;
-    while (dataFile.available()) {
+  SPrint("Send '*' (0x2A)");
+  sendOneByte('*');
+  SPrintln("\r\n---------------------------------");
+
+  tmpB = 0;
+  while (dataFile.available()) 
+  {
         yield();
         hByte = (char)dataFile.read();
         // skip non-printable chars ---------------
         if (hByte <= ' ' || hByte >= '}') continue;
-        if ((tmpB%16) == 0)     {dPrintln();} 
-        else if ((tmpB%8) == 0) {dPrint(" ");}
+        if ((tmpB%16) == 0)     {SPrintln();} 
+        else if ((tmpB%8) == 0) {SPrint(" ");}
 
         tmpB++;
         if (   (hByte >= '0' && hByte <= '9') 
@@ -126,38 +140,38 @@ void playbackTape() {
                     lByte = (char)dataFile.read();
                     actByte += char2Byte(lByte);
                 }
-                dPrint(" ");
+                SPrint(" ");
                 if (actByte < 0x10) {
-                    dPrint("0"); 
+                    SPrint("0"); 
                 }
                 
-                dPrint(actByte, HEX);  
+                SPrint(actByte, HEX);  
                 sendTwoAscii(actByte);
         
         } else {    // not in 0-9, A-F
                 actByte = hByte;
-                dPrint(" >> ");            
-                if (actByte < 0x10) dPrint("0"); 
-                dPrint(actByte, HEX);  
-                dPrintf(" (%c)\n", actByte);         
+                SPrint(" >> ");            
+                if (actByte < 0x10) SPrint("0"); 
+                SPrint(actByte, HEX);  
+                SPrintf(" (%c)\r\n", actByte);         
                 sendOneByte(actByte);
 
         }
             
-    }   // while there is data
+  }   // while there is data
 
-    dPrintln("\n---------------------------------");
+  SPrintln("\r\n---------------------------------");
 
-    //displayMsg("Send EOT (0x04)");
-    dPrint("Send EOT (0x04) 2 times ..");
-    for (int L=0; L<2; L++) {
-        // EOT 0x04
-        // 0b00000100
-        sendOneByte(0x04);
-    }
+  //displayMsg("Send EOT (0x04)");
+  SPrint("Send EOT (0x04) 2 times ..");
+  for (int L=0; L<2; L++) 
+  {
+    // EOT 0x04
+    // 0b00000100
+    sendOneByte(0x04);
+  }
 
-    dataFile.close();
-    Serial.println("\nDone..");
+  dataFile.close();
+  SPrintln("\r\nDone..");
 
 }   // playbackTape()
-

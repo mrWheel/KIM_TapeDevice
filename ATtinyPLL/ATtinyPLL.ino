@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
-**  Program  : ATtiny85PLL
-**  Copyright (c) 2017 Willem Aandewiel
+**  Program  : ATtinyPLL
+**  Copyright (c) 2017-2021 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -46,7 +46,7 @@
 ** low frequency is detected. 
 ** It does this by starting a timer the moment the High freguency is detected
 ** and stop the timer the moment the Low frequency is detected. If the duration 
-** between the starting and ending is > 3.726 milli seconds, than make the 
+** between the starting and ending is > 3.726 milliseconds, than make the 
 ** output-pin LOW. If it is < 3.726 millis seconds, than make the output-pin
 ** HIGH.
 ** 
@@ -56,9 +56,14 @@
 ***************************************************************************  
 */
 
+#include "Debug.h"
+
 #define _BV(bit)            (1 << (bit))
 #define SET(a,b)            ((a) |= _BV(b))
 #define CLEAR(a,b)          ((a) &= ~_BV(b))
+
+#define WAIT4BIT  1000
+#define PLLTIME   5000
 
 // ======================================================
 // determine CPY type by verbose compile (preferences)
@@ -76,6 +81,7 @@
     #define _ARDUINO_OUT    7           // ArduinoPin 7
     //                        76543210
     #define _BIT_OUT        0B10000000
+    #define _MID  320
 //
 #elif defined(__AVR_ATtiny84__)
     // --- PORT and BIT for ATtiny84
@@ -87,6 +93,7 @@
     #define _ARDUINO_OUT    3           // DIL-10 / ArduinoPin 3
     //                        76543210
     #define _BIT_OUT        0B00001000
+    #define _MID  320
 //
 #elif defined(__AVR_ATtiny85__)
     // --- PORT and BIT for ATtiny85
@@ -98,62 +105,193 @@
     #define _ARDUINO_OUT    1           // DIL-6 / ArduinoPin 1
     //                        76543210
     #define _BIT_OUT        0B00000001
+    #define _MID  320
 //
 #else
     #error "Choose Arduino UNO, ATtiny84 or ATtiny85!"
 #endif
 
-#define _SHORT  320
-
 uint16_t    count = 0;
-uint16_t    minCount, maxCount;
 uint32_t    startPulse, prevPulse, lastPulse;
+uint32_t    midDuration;        // use this pulseDuration as base for the long/short test
+uint32_t    midPulse;           // pulseDuration / 2
+uint32_t    lastPllTimer;     // if Due, start measering the pulseWidt at firs pulse
+uint32_t    wait4BitTimer;
 uint32_t    debugTime;
 
-void setup() {
-#if defined(__AVR_ATmega328P__)
-    Serial.begin(9600);
-    Serial.println("pulse width tester");
-#endif
-    pinMode(_ARDUINO_IN,  INPUT);  
-    pinMode(_ARDUINO_OUT, OUTPUT);  
-    
-#if defined(__AVR_ATmega328P__)
-    Serial.print("Bit IN  "); Serial.print(_ARDUINO_IN);  Serial.print(" 0B"); Serial.println(_BIT_IN,  BIN);
-    Serial.print("Bit OUT "); Serial.print(_ARDUINO_OUT); Serial.print(" 0B"); Serial.println(_BIT_OUT, BIN);
+//========================================================================================
+/*  pulse @3700Hz => 270uSec
+*   pulse @2400Hz => 417uSec 
+*/
+void tunePLL()
+{
+  uint32_t  startTime;
+  uint32_t  startBit;
+  uint32_t  pllTimer;
+  uint32_t  bitCount = 0;
+  uint32_t  bitDuration = 0;
+  uint16_t  lowCount, highCount;
+  SPrint("Waiting for first pulse ..");
+
+  lastPllTimer = millis();
+
+  wait4BitTimer      = millis();
+  while ( ((_PORTIN & _BIT_IN) == 0) && ((millis()-wait4BitTimer) < WAIT4BIT) ); // wait for HIGH
+  while ( ((_PORTIN & _BIT_IN) == 1) && ((millis()-wait4BitTimer) < WAIT4BIT) ); // wait for LOW
+
+//      +---+   +---+   +---+   +-----+     +-----+     +-----+     +---+ 
+//      |   |   |   |   |   |   |     |     |     |     |     |     |   |
+//     -+   +---+   +---+   +---+     +-----+     +-----+     +-----+   +-
+//       <-270-> <-270-> <-270-> <---417---> <---417---> <---417--->
+//
+  wait4BitTimer      = millis();
+  while ( ((_PORTIN & _BIT_IN) == 0) && ((millis()-wait4BitTimer) < WAIT4BIT) ); // wait for HIGH
+
+  if ((millis()-wait4BitTimer) >= WAIT4BIT)
+  {
+    SPrintln("Timeout..");
+    return;
+  }
+  SPrintln(" GO!");
+
+  //startTime     = micros();
+  lastPulse     = _MID;
+  midDuration   = _MID;
   
-    debugTime = millis() + 5000;
-#endif  
-    for (uint8_t T=0; T<200; T++) {
-        SET(_PORTOUT, _BIT_OUT);
-        delay(5);
-        CLEAR(_PORTOUT, _BIT_OUT);
-        delay(5);
-    }
+  wait4BitTimer = millis();
+  while (((_PORTIN & _BIT_IN) == 1) && ((millis()-wait4BitTimer) < WAIT4BIT)); // wait for LOW
 
-}   // setup()
+  bitCount      = 0;
+  pllTimer      = millis();
+  startBit      = micros();
+  while( (millis() - pllTimer) < 2000)  // calibrate for 3 seconds
+  {
 
-void loop() {
-    while ((_PORTIN & _BIT_IN) == 0); // wait for HIGH
+    wait4BitTimer = millis();
+    while (((_PORTIN & _BIT_IN) == 0) && (millis()-wait4BitTimer) < WAIT4BIT); // wait for HIGH
+    if ((millis()-wait4BitTimer) >= WAIT4BIT)  return;
+    
+    lastPllTimer = millis();
+
+    bitCount++;
     prevPulse   = lastPulse;
     lastPulse   = micros() - startPulse;
     startPulse  = micros();
-    if ((prevPulse < _SHORT) && (lastPulse > _SHORT)) {
-        CLEAR(_PORTOUT, _BIT_OUT);
-    }
-    if ((prevPulse > _SHORT) && (lastPulse < _SHORT)) {
-        SET(_PORTOUT, _BIT_OUT);
 
+    if ((prevPulse < midDuration) && (lastPulse > midDuration)) 
+    {
+      if (bitCount > 5)
+      {
+        midDuration = (lastPulse + prevPulse) / 2;
+      }
+    }
+    else if ((prevPulse > midDuration) && (lastPulse < midDuration)) 
+    {
+      if (bitCount > 5)
+      {
+        midDuration = (lastPulse + prevPulse) / 2;
+      }
+    }
+    while (((_PORTIN & _BIT_IN) == _BIT_IN) && (millis()-wait4BitTimer) < WAIT4BIT); // wait for LOW
+
+  } // while ...
+  
+  SPrint("midDuration is [");
+  SPrint(midDuration);
+  SPrintln("]uSec");
+
+  if (midDuration < (_MID - 50) || midDuration > (_MID + 50)) 
+  {
+    midDuration = _MID;
+    SPrint("midDuration is [");
+    SPrint(midDuration);
+    SPrintln("]uSec Changed!");
+  }
+ 
+  lastPllTimer = millis();
+
+} //  tunePLL()
+
+
+//========================================================================================
+void setup() 
+{
 #if defined(__AVR_ATmega328P__)
-        if (millis() > debugTime) {
-            Serial.println(prevPulse);
-            Serial.println(lastPulse);
-            Serial.println();
+    Serial.begin(115200);
+#endif
+    SPrintln("pulse width tester");
+    pinMode(_ARDUINO_IN,  INPUT);  
+    pinMode(_ARDUINO_OUT, OUTPUT);  
+    
+    SPrint("Bit IN  "); SPrint(_ARDUINO_IN);  SPrint(" 0B"); SPrintln(_BIT_IN,  BIN);
+    SPrint("Bit OUT "); SPrint(_ARDUINO_OUT); SPrint(" 0B"); SPrintln(_BIT_OUT, BIN);
+  
+    debugTime = millis() + 5000;
+
+    for (uint8_t T=0; T<200; T++) 
+    {
+        SET(_PORTOUT, _BIT_OUT);
+        delay(5);
+        CLEAR(_PORTOUT, _BIT_OUT);
+        delay(5);
+    }
+    
+    lastPllTimer = millis();
+    midDuration = 0;
+    midPulse      = 0;
+    
+}   // setup()
+
+
+//========================================================================================
+void loop() 
+{
+    if ((millis() - lastPllTimer) > PLLTIME) // give it 5 seconds
+    {
+      midDuration = 0;  // reset midDuration
+    }
+    if (midDuration == 0)
+    {
+      tunePLL();
+      lastPllTimer = millis();
+    }
+
+    wait4BitTimer = millis();
+    while (((_PORTIN & _BIT_IN) == 0) && (millis()-wait4BitTimer) < WAIT4BIT); // wait for HIGH
+    if ((millis()-wait4BitTimer) >= WAIT4BIT)  return;
+    
+    lastPllTimer = millis();
+
+    prevPulse   = lastPulse;
+    lastPulse   = micros() - startPulse;
+    startPulse  = micros();
+
+    if ((prevPulse < midDuration) && (lastPulse > midDuration)) 
+    {
+        CLEAR(_PORTOUT, _BIT_OUT);
+        
+        if (millis() > debugTime) 
+        {
+            SPrintln(prevPulse);
+            SPrintln(lastPulse);
+            SPrintln();
             debugTime = millis() + 5000;
         }
-#endif
     }
-    while ((_PORTIN & _BIT_IN) == _BIT_IN); // wait for LOW
+
+    if ((prevPulse > midDuration) && (lastPulse < midDuration)) 
+    {
+        SET(_PORTOUT, _BIT_OUT);
+    
+        if (millis() > debugTime) 
+        {
+            SPrintln(prevPulse);
+            SPrintln(lastPulse);
+            SPrintln();
+            debugTime = millis() + 5000;
+        }
+    }
+    while (((_PORTIN & _BIT_IN) == _BIT_IN) && (millis()-wait4BitTimer) < WAIT4BIT); // wait for LOW
 
 }   // loop()
 
@@ -180,4 +318,3 @@ void loop() {
 * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 * 
 ***************************************************************************/
-
