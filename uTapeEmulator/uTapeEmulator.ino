@@ -15,7 +15,7 @@
 
 #define USE_UPDATE_SERVER
 #define DEBUG_ON
-#define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
+#define _HAS_BUTTONS    false    // false=no buttons, true=yes we have buttons
 
 //---------- no need to change enything after this ------
 
@@ -587,7 +587,7 @@ void renameProgName(uint8_t fileNum, char *newName)
 
     if (fileNum == 0 || fileNum >= 0xE0) 
     {
-        SPrintln("\r\nError: cannot alter description of this program\r\n");
+        SPrintln("\r\nError: cannot alter name of this program\r\n");
         return;
     }
     readProgDetailsByID(fileNum);
@@ -752,7 +752,7 @@ bool getNewProgName()
     
     if (actFileID == 0 || actFileID >= 0xE0) 
     {
-        SPrintln("\r\nError: cannot alter description of Program 00 (ScratchBook)\r\n");
+        SPrintln("\r\nError: cannot alter Name of Program 00 (ScratchBook)\r\n");
         return false;
     }
 

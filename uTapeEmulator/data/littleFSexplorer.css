@@ -93,7 +93,6 @@ form:nth-of-type(2) {
 }
 .row:last-child {
   margin-bottom: 0;
-  /*align: right;*/
 }
 
 .colFname  {
@@ -124,6 +123,13 @@ form:nth-of-type(2) {
     text-decoration: none;
 }
 
+.bottomButtons {
+  display: flex;
+  flex: 1 1 600px;
+  justify-content: center;
+  align-items: center;   
+}
+
 #up {
 	box-shadow: 5px 5px 5px rgba(0,0,0,0.7);
 }
@@ -147,10 +153,11 @@ form:nth-of-type(2) {
 	display: none;
 }
 [name="group"] + label {
-	font-size: 1.5em;
-	margin-right: 5px;
+	font-size: 2.0em;
+	margin-right: 25px;
 }
 [name="group"] + label::before {
+	margin-right: 25px;
 	content: "\002610";
 }	
 [name="group"]:checked + label::before {

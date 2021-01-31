@@ -28,7 +28,7 @@
 		        if (f != noted) 
 		        {
 			        noted = f;
-			        dir += `<nav><input type="radio" id="${f}" name="group"><label for="${f}"></label> &#128193; ${f} <a href="?delete=/${f}">&#x1f5d1;&#xfe0f;</a></nav>`;
+			        dir += `<nav><input type="radio" id="${f}" name="group"><label for="${f}"></label> &#128193; <b>/${f}</b> <a href="?delete=/${f}">&#x1f5d1;&#xfe0f;</a></nav>`;
 			      }
             if (n != '') 
             {
@@ -71,7 +71,7 @@
                   } 
                   else 
                   {
-        			     si.innerHTML = `<li><b>Filesize:</b> ${output}</li>`;
+        			      si.innerHTML = `<li><b>Filesize:</b> ${output}</li>`;
                     up.removeAttribute('disabled');
                   }
 			      }
@@ -121,12 +121,12 @@
     
     <section class="content">
       <div class="box flex">
-        <div class="id">
+        <div class="bottomButtons">
           <form action='/' method='POST'>
            <button id="Exit">Exit FSexplorer</button>
           </form>
         </div>
-        <div class="id">
+        <div class="bottomButtons">
           <form action="/listFS" method="POST">
            <button id="listFS">List LittleFS</button>
 	      </form>
@@ -136,12 +136,12 @@
     
     <section class="content">
       <div class="box flex">
-        <div class="id">
+        <div class="bottomButtons">
           <form action='/update' method='POST'>
     	     <button id="updateFW">Update Firmware</button>
           </form>
         </div>
-        <div class="id">
+        <div class="bottomButtons">
           <form action="/ReBoot" method="POST">
             <button id="ReBoot">Reboot</button>
 	      </form>
@@ -151,12 +151,12 @@
     
     <section class="content">
       <div class="box flex">
-        <div class="id">
+        <div class="bottomButtons">
           <form action="/format" method="POST" disabled>
 	          <button id="format" disabled>Format LittleFS</button>
 	        </form>
 	      </div>
-        <div class="id">
+        <div class="bottomButtons">
           <!-- dummy -->
 	      </div>
       </div>
