@@ -143,7 +143,7 @@
         gID = Number("0x"+jsonMessage.ID);
         console.log("gID["+gID+"] -> Lock["+jsonMessage.Lock+"]");
         document.getElementById('ID').innerHTML   = jsonMessage.ID;
-        document.getElementById('Strt').innerHTML = "Start [$"+jsonMessage.Strt+"] &nbsp; ";
+        document.getElementById('Strt').innerHTML = "Start [$"+jsonMessage.Strt+"]";
         console.log("jsonMessage.Lock is ["+jsonMessage.Lock+"]");
         if (jsonMessage.Lock == "1") 
         {
@@ -158,7 +158,7 @@
         if (gID >= 124) gLock = true;
         console.log("(2) gLock["+gLock+"]");
         document.getElementById('switchLock').checked = !gLock;
-        document.getElementById('End').innerHTML = "&nbsp; End [$"+jsonMessage.End+"] &nbsp; ";
+        document.getElementById('End').innerHTML = "&nbsp; End [$"+jsonMessage.End+"] ";
         document.getElementById('Name').innerHTML = "&nbsp; &nbsp; "+jsonMessage.Name;
         document.getElementById('Name').value = jsonMessage.Name;
         document.getElementById('Name').readOnly = true;

@@ -33,11 +33,10 @@
             if (n != '') 
             {
               dir += `<div class="row">`
-            //dir += `<div class="colFname linkFname"><a href="${f}/${n}" target="_blank">${n}</a></div>`;
-              dir += `<div class="colFname">${n}</div>`;
-              dir += `<div class="colFsize"><small>${json[i].size}</small></div>`;
-              dir += `<div class="colButton linkButton"><a href="${f}/${n}"download="${n}">&nbsp;Download&nbsp;</a></div>`;
-              dir += `<div class="colButton linkButton"><a href="?delete=${f}/${n}">&nbsp;Delete&nbsp;</a></div>`;
+              dir += `<div class="row colFname">${n}</div>`;
+              dir += `<div class="row colFsize"><small>&nbsp;${json[i].size}</small></div>`;
+              dir += `<div class="row colButton linkButton"><a href="${f}/${n}"download="${n}">&nbsp;Download&nbsp;</a></div>`;
+              dir += `<div class="row colButton linkButton"><a href="?delete=${f}/${n}">&nbsp;Delete&nbsp;</a></div>`;
               dir += `</div>`
             }
             myList.insertAdjacentHTML('beforeend', dir);
@@ -47,6 +46,14 @@
           var free = json[i].freeBytes;
 		      cr.addEventListener('click', () => {
 			      document.getElementById('no').classList.toggle('no');
+			      if (document.getElementById('no').classList.value == 'no')
+			      {
+			        document.getElementById('uploader').classList.value = '';
+			      }
+			      else
+			      {
+			        document.getElementById('uploader').classList.value = 'no';
+			      }
 		      });
 		      so.addEventListener('click', () => {
 			      list(to=++to%2);
@@ -82,40 +89,78 @@
     </script>
   </head>
   <body>
-    <h2>ESP8266 Filesystem Manager</h2>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-	    <input id="fs" type="file" name="up[]" multiple>
-      <input id="up" type="submit" value="Upload" disabled>
-    </form>
-	  <form id="no" class="no" method="POST">
-	    <input name="new" placeholder="Map Name" pattern="[^\x22/%&\\:;]{1,31}" title="Chars &#8220; % & / : ; \  not allowed." required="">
-	    <button>Create</button>
-	  </form>
-    <main></main>
-  <div style='width: 30%'>
-    <form style='float: left;' action='/' method='POST'>
-  	  <button id="Exit">Exit FSexplorer</button>
-    </form>
-    <form style='float: right;' action="/listFS" method="POST">
-  	  <button id="listFS">List LittleFS</button>
-	</form>
-  </div>
+    <section class="content">
+      <div class="box flex center">
+        <div class="box center">
+          <h2>ESP8266 Filesystem Manager</h2>
+        </div>
+      </div>  
+    </section>
+    <section class="content">
+      <div class="box flex">
+        <div class="box center">
+          <div id="uploader">
+          <form action="/upload" method="POST" enctype="multipart/form-data">
+	          <input id="fs" type="file" name="up[]" multiple>
+            <input id="up" type="submit" value="Upload" disabled>
+          </form>
+          </div>
+          <form id="no" class="no" method="POST">
+	          <input name="new" placeholder="Map Name" pattern="[^\x22/%&\\:;]{1,31}" title="Chars &#8220; % & / : ; \  not allowed." required="">
+	          <button>Create</button>
+	        </form>
+	      </div>
+      </div>
+	  </section>
 
-    <div style='width: 30%'>
-    <form style='float: left;' action='/update' method='POST'>
-  	  <button id="updateFW">Update Firmware</button>
-    </form>
-    <form style='float: right;' action="/ReBoot" method="POST">
-  	  <button id="ReBoot">Reboot</button>
-	</form>
-  </div>
-	
-  <div style='width: 30%'>
-    <form style='float: left;' action="/format" method="POST" disabled>
-	    <button id="format" disabled>Format LittleFS</button>
-	  </form>
-  </div>
-  <div style='width: 80%'>&nbsp;</div>
+	  <section class="content">
+      <div class="box flex">
+        <main></main>
+      </div>
+    </section>
+    
+    <section class="content">
+      <div class="box flex">
+        <div class="id">
+          <form action='/' method='POST'>
+           <button id="Exit">Exit FSexplorer</button>
+          </form>
+        </div>
+        <div class="id">
+          <form action="/listFS" method="POST">
+           <button id="listFS">List LittleFS</button>
+	      </form>
+	    </div>
+      </div>
+    </section>
+    
+    <section class="content">
+      <div class="box flex">
+        <div class="id">
+          <form action='/update' method='POST'>
+    	     <button id="updateFW">Update Firmware</button>
+          </form>
+        </div>
+        <div class="id">
+          <form action="/ReBoot" method="POST">
+            <button id="ReBoot">Reboot</button>
+	      </form>
+	    </div>
+      </div>
+    </section>
+    
+    <section class="content">
+      <div class="box flex">
+        <div class="id">
+          <form action="/format" method="POST" disabled>
+	          <button id="format" disabled>Format LittleFS</button>
+	        </form>
+	      </div>
+        <div class="id">
+          <!-- dummy -->
+	      </div>
+      </div>
+    </section>
 
   </body>
 </html>

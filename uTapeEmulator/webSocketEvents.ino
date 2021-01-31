@@ -43,6 +43,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 webSocket.broadcastTXT("blockButtons");
                 actFileID = findPreviousID(actFileID);
                 scrollInterval = millis();
+                readProgDetailsByID(actFileID);
                 printMenu();
                 webSocket.broadcastTXT("freeButtons");
                 DebugTln("Done!");
@@ -71,6 +72,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 webSocket.broadcastTXT("blockButtons");
                 actFileID = findNextID(actFileID);
                 scrollInterval = millis();
+                readProgDetailsByID(actFileID);
                 printMenu();
                 webSocket.broadcastTXT("freeButtons");
                 DebugTln("Done!");
@@ -81,6 +83,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
                 webSocket.broadcastTXT("blockButtons");
                 actFileID = findFirstEmptyID();
                 scrollInterval = millis();
+                //-readProgDetailsByID(actFileID);
                 printMenu();
                 webSocket.broadcastTXT("freeButtons");
                 DebugTln("Done!");
@@ -126,7 +129,7 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
               jsonString += ", \"devIPaddress\": \"" + WiFi.localIP().toString() + " \"";
               jsonString += ", \"devVersion\": \" [" + String(_FW_VERSION) + "]\"";
               jsonString += "}";
-              Debugf("websocket.send(%s)\r\n", jsonString.c_str());
+              //Debugf("websocket.send(%s)\r\n", jsonString.c_str());
               webSocket.broadcastTXT(jsonString);
               sendProgDetails();
               sendProgDescription();              
@@ -154,7 +157,7 @@ void sendProgDetails()
   else                  jsonString += "\"0\"";
   jsonString += ", \"Name\":\""+String(progDetails.Name)+"\"";
   jsonString += "}";
-  Debugf("\r\nbroadcastTXT(%s)\r\n",jsonString.c_str());
+  //Debugf("\r\nbroadcastTXT(%s)\r\n",jsonString.c_str());
   webSocket.broadcastTXT(jsonString.c_str());
 
 } // sendProgDetails()
@@ -176,7 +179,7 @@ void sendProgDescription()
   {
     Debugln(" not found!\r");
     jsonString += " \"}";
-    Debugf("\r\nbroadcastTXT(%s)\r\n",jsonString.c_str());
+    //Debugf("\r\nbroadcastTXT(%s)\r\n",jsonString.c_str());
     webSocket.broadcastTXT(jsonString.c_str());
     return;
   }
@@ -198,7 +201,7 @@ void sendProgDescription()
   }
   D.close();
   jsonString += "\\n\"}";
-  Debugf("\r\nbroadcastTXT(%s)\r\n",jsonString.c_str());
+  //Debugf("\r\nbroadcastTXT(%s)\r\n",jsonString.c_str());
   webSocket.broadcastTXT(jsonString.c_str());
 
 } // sendProgDescription()

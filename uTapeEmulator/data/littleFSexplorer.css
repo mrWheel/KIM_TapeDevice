@@ -1,13 +1,13 @@
 /* For more information visit:https://fipsok.de */
 body {
-	font-family: sans-serif;
-	background-color: #87cefa;
-	display: flex;
-	flex-flow: column;
-	width:100%;
-	align-items: center;
-}
-
+  margin: 0;
+  height: 100vh;  /*100% view height */
+  width: 100vw;   /* 100% view width */
+  background: lightblue;
+  font-family: monospace; 
+  font-size: 12pt;
+} 
+  
 li {
 	background-color: rgba(255, 255, 255, 0.4);
 	list-style-type: none;
@@ -24,20 +24,67 @@ li a:first-child, li b {
 	cursor:pointer;
 }
 
+input {
+	height:35px;
+	font-size:14px;
+	padding-left: .3em;
+}
 
-#container {
-  width: 400px;
+button {
+	height:30px;
+	width:150px;
+	font-size:16px;
+	margin-top: 1em;
+	box-shadow: 5px 5px 5px rgba(0,0,0,0.7);
+}
+div button {
+	<!--background-color: #7bff97; -->
+  background: rgba(0, 0, 0, 0.2);
+}
+
+form [title] {
+	background-color: skyblue;
+	font-size: 16px;
+	width: 125px;
+}
+form:nth-of-type(2) {
+	margin-bottom: 1em;
+}
+
+.content {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  background-color: lightgrey;
-  padding: 1px;
+  flex-direction: row;
+  flex: 1 0 800px;
+  justify-content: center;
+}
+
+.box.flex {
+  display: flex;
+}
+.box {
+  flex: 0 0 600px;
+  border-radius: 4px;
+}
+.box.left  {
+  flex-shrink: 0;
+  text-align: left;
+}
+.box.center  {
+  flex-shrink: 0;
+  text-align: center;
+}
+.box.right  {
+  flex-shrink: 0;
+  text-align: right;
+}
+
+.no {
+	display: none;
 }
 
 .row {
   flex: 1 1 auto;
-  width: 100%;
+  width: 580px;
   margin-bottom: 0px;
   border: 1px solid gray;
   background-color: #e1e1e1;
@@ -48,27 +95,18 @@ li a:first-child, li b {
   margin-bottom: 0;
   /*align: right;*/
 }
-.col  {
-  flex: 0 0 45%;
-  text-decoration: none!important;
-}
+
 .colFname  {
   flex: 0 0 53%;
   text-decoration: none!important;
 }
 .colFsize {
   flex: 0 0 15%;
+  text-align: right;
 }
 .colButton a {
   flex: 0 0 10%;
   text-decoration: none;
-}
-
-.linkFname {
-    color: white; /* #FFF; */
-    padding-left: 3px;
-    padding-right: 1px;
-    text-decoration: none!important;
 }
 
 .linkButton {
@@ -85,66 +123,17 @@ li a:first-child, li b {
     padding-right: 1px;
     text-decoration: none;
 }
-input {
-	height:35px;
-	font-size:14px;
-	padding-left: .3em;
-}
-label + a {
-	text-decoration: none;
-}
-h1 + main {
-	display: flex;
-}  
-aside {
-	display: flex;
-	flex-direction: column;
-	padding: 0.2em;
-}
-button {
-	height:30px;
-	width:150px;
-	font-size:16px;
-	margin-top: 1em;
+
+#up {
 	box-shadow: 5px 5px 5px rgba(0,0,0,0.7);
 }
-div button {
-	<!--background-color: #7bff97; -->
-  background: rgba(0, 0, 0, 0.2);
-}
-nav {
-	display: flex;
-	align-items: baseline;
-	justify-content: space-between;
-}
-#left {
-	align-items:flex-end;
-	text-shadow: 0.5px 0.5px 1px #757474;
-}
+
 #cr {
 	font-weight: bold;
 	cursor:pointer;
 	font-size: 1.5em;
 }
-.note {
-	background-color: #fecdee;
-	padding: 0.5em;
-	margin-top: 1em;
-	text-align: center;
-	max-width: 320px;
-	border-radius: 0.5em;
-}
-.no {
-	display: none;
-}
-form [title] {
-	background-color: skyblue;
-	font-size: 16px;
-	width: 125px;
-}
-form:nth-of-type(2) {
-	margin-bottom: 1em;
-}
+
 [type=submit] {
 	height:25px; 
 	font-size: 16px;
@@ -153,6 +142,7 @@ form:nth-of-type(2) {
 	margin-top: 1em;
 	box-shadow: 5px 5px 5px rgba(0,0,0,0.7);
 }
+
 [name="group"] {
 	display: none;
 }

@@ -1,0 +1,58 @@
+ 0001   0000             ;
+0002   0000             INH      .EQU $F9
+0003   0000             POINTL   .EQU $FA
+0004   0000             POINTH   .EQU $FB
+0005   0000             
+0006   0000             SCANDS   .EQU $1F1F
+0007   0000             GETKEY   .EQU $1F6A
+0008   0000             ROM      .EQU $1C00
+0009   0000             TMRSET 	 .EQU $1746
+0010   0000             TMRCHK   .EQU $1747
+0011   0000             
+0012   0200                     .ORG    $0200
+0013   0200             
+0014   0200 A9 00       BEGN:   LDA     #$00
+0015   0202 85 F9               STA     INH    ; ZERO DISPLAY
+0016   0204 85 FA               STA     POINTL
+0017   0206 85 FB               STA     POINTH
+0018   0208 20 1F 1F    HOLD:   JSR     SCANDS ; LIGHT DISPLAY
+0019   020B 20 6A 1F            JSR     GETKEY
+0020   020E C9 04               CMP     #$04   ; KEY 4?
+0021   0210 D0 03               BNE     CONT
+0022   0212 4C 64 1C            JMP     $1C64  ; RETURN TO KIM
+0023   0215 C9 02       CONT:   CMP     #$02   ; KEY 2?
+0024   0217 F0 E7               BEQ     BEGN   ; BACK TO ZERO
+0025   0219 C9 01               CMP     #$01   ; KEY 1?
+0026   021B D0 EB               BNE     HOLD
+0027   021D A9 9C               LDA     #$9C
+0028   021F 8D 46 17            STA     TMRSET ; SET TIMER
+0029   0222 20 1F 1F    DISP:   JSR     SCANDS ; DISPLAY VALUE
+0030   0225 AD 47 17    CLCK:   LDA     TMRCHK ; CHECK TIMER
+0031   0228 F0 FB               BEQ     CLCK
+0032   022A 8D 00 1C            STA     ROM    ; DELAY 4 MSEC.
+0033   022D A9 9C               LDA     #$9C   ; SET TIMER
+0034   022F 8D 46 17            STA     TMRSET
+0035   0232 18                  CLC
+0036   0233 F8                  SED            ; SET FLAGS
+0037   0234 A5 F9               LDA     INH
+0038   0236 69 01               ADC     #$01   ; INC. 100THS
+0039   0238 85 F9               STA     INH
+0040   023A A5 FA               LDA     POINTL
+0041   023C 69 00               ADC     #$00   ; INC. SECONDS
+0042   023E 85 FA               STA     POINTL
+0043   0240 C9 60               CMP     #$60   ; STOP AT 60
+0044   0242 D0 0B               BNE     CKEY
+0045   0244 A9 00               LDA     #$00
+0046   0246 85 FA               STA     POINTL ; ZERO SECONDS
+0047   0248 A5 FB               LDA     POINTH
+0048   024A 18                  CLC
+0049   024B 69 01               ADC     #$01   ; INC. MINUTES
+0050   024D 85 FB               STA     POINTH
+0051   024F D8          CKEY:   CLD
+0052   0250 20 6A 1F            JSR     GETKEY ; READ KEYBOARD
+0053   0253 C9 00               CMP     #$00   ; KEY 0?
+0054   0255 D0 CB               BNE     DISP
+0055   0257 F0 AF               BEQ     HOLD   ; STOP
+0056   0259             
+0057   0259             	.END
+# tasm: Number of errors = 0

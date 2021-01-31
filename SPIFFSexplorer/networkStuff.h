@@ -39,7 +39,7 @@ void startWiFi() {
 
   String thisAP = String(_HOSTNAME) + "-" + WiFi.macAddress();
   
-  manageWiFi.setDebugOutput(true);
+  manageWiFi.setDebugOutput(false);
   
   //set callback that gets called when connecting to previous WiFi fails, and enters Access Point mode
   manageWiFi.setAPCallback(configModeCallback);

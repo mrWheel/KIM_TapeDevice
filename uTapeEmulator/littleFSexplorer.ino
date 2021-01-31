@@ -51,7 +51,6 @@ const char HELPER[]  PROGMEM = R"(
 )";
 
 
-
 void setupFS() {                                                                       // Funktionsaufruf "setupFS();" muss im Setup eingebunden werden
   LittleFS.begin();
   httpServer.on("/format", formatFS);
@@ -66,14 +65,15 @@ void setupFS() {                                                                
   });
 }
 
-bool handleList() {                                                                    // Senden aller Daten an den Client
-  FSInfo fs_info;  LittleFS.info(fs_info);                                             // Füllt FSInfo Struktur mit Informationen über das Dateisystem
+bool handleList() 
+{                                           // Senden aller Daten an den Client
+  FSInfo fs_info;  LittleFS.info(fs_info);  // Füllt FSInfo Struktur mit Informationen über das Dateisystem
   Dir dir = LittleFS.openDir("/");
   using namespace std;
   typedef tuple<String, String, int> records;
   list<records> dirList;
   while (dir.next()) 
-  {                           
+  { 
     yield();  
     if (dir.isDirectory()) // Ordner und Dateien zur Liste hinzufügen
     {
@@ -118,6 +118,7 @@ bool handleList() {                                                             
     }
     return false;
   });
+  
   String temp = "[";
   for (auto& t : dirList) 
   {
@@ -127,7 +128,7 @@ bool handleList() {                                                             
   temp += ",{\"usedBytes\":\"" + formatBytes(fs_info.usedBytes) +                      // Berechnet den verwendeten Speicherplatz
           "\",\"totalBytes\":\"" + formatBytes(fs_info.totalBytes) +                   // Zeigt die Größe des Speichers
           "\",\"freeBytes\":\"" + (fs_info.totalBytes - fs_info.usedBytes) + "\"}]";   // Berechnet den freien Speicherplatz
-  SPrintln(temp);
+  //SPrintln(temp);
   httpServer.send(200, "application/json", temp);
   return true;
 }
@@ -241,7 +242,7 @@ void updateFirmware()
 void reBootESP()
 {
   DebugTln(F("Redirect and ReBoot .."));
-  doRedirect("Reboot DSMR-logger ..", 30, "/", true);
+  doRedirect("Reboot uTape ..", 30, "/", true);
       
 } // reBootESP()
 

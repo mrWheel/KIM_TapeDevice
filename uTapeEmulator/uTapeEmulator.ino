@@ -3,18 +3,21 @@
  *  Program  : uTapeEmulator
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (21-01-2021)"
+#define _FW_VERSION "v2.0.0 WS (31-01-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
  * Board:         "Generic ESP8266 Module"
  * Builtin Led:   "2"
- * CPU Frequency: "160 MHz"
+ * CPU Frequency: "80 MHz" or "160 MHz"
  * Flash Size:    "4MB (FS:3MB OTA:~512KB)"
 ***************************************************************************/  
 
 #define USE_UPDATE_SERVER
 #define DEBUG_ON
+#define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
+
+//---------- no need to change enything after this ------
 
 #define _HOSTNAME   "uTape"
 
@@ -23,7 +26,7 @@
 #include "networkStuff.h"
 #include "LittleFS.h"
 
-#include <SSD1306.h>
+#include <SSD1306.h>    // https://github.com/ThingPulse/esp8266-oled-ssd1306
 
 //#define _BV(bit)            (1 << (bit))
 #define _SET(a,b)           ((a) |= _BV(b))
@@ -34,8 +37,9 @@
 #define _SDA            4       // D2   - GPIO04
 #define _SCL            5       // D1   - GPIO05
 
-#define _TAPE_IN_PIN    12      // D6   - GPIO12
-#define _TAPE_OUT_PIN   13      // D7   - GPIO13
+#define _PLL_RESET      2       // D4   - GPIO02
+#define _PLL_IN_PIN     13      // D7   - GPIO13  // swaped 27-01
+#define _TAPE_OUT_PIN   12      // D6   - GPIO12  // swaped 27-01
 
 #define _PLAY_BUTTON    0       // A0
 #define _FREV_BUTTON    14      // D5
@@ -50,6 +54,7 @@
 #define DISPLAY_HEIGHT      64
 
 #define NAME_SIZE        23 // /<ID>+/+<fName>+".hex" => 4+23+4 = 31
+#define MAX_PROG_SIZE    4096
 
 // Initialize the OLED display using Wire library
 SSD1306  display(0x3c, _SDA, _SCL);
@@ -68,8 +73,10 @@ struct { uint8_t  numID;
 char            ascii[] = {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
 
 char            wsSend[100];          // String to send via WebSocket
-
+bool            catalog[256];
+bool            actCatalog = false;
 int16_t         progCounter;
+uint16_t        progPos;
 
 uint32_t        getTimingDuration, dimOledTimer, processKeyTimer, processButtonTimer;
 uint32_t        bitStartTime, bitTime;
@@ -79,13 +86,14 @@ char            fileID[5];
 char            idDir[6];
 char            filePath[33];
 char            newName[NAME_SIZE];
-char            cBuff[50], sBuff[30], scrollName[50];
+char            cBuff[81], sBuff[30], scrollName[50];
 char            lByte, hByte;
 int16_t         tmpB, idxName;
 uint32_t        scrollInterval;
 char            buttonChoice, mChoice;
 bool            displayIsOff;
 char            cIn = 0;
+bool            buttonsActive = false;
 
 
 //------------------------------------------------------
@@ -107,8 +115,13 @@ void printByte(int c) {
 //------------------------------------------------------
 bool buttonChanged() 
 {
+    uint32_t  waitTime;
     int16_t   aVal;
 
+#if _HAS_BUTTONS == false
+     return false;
+#endif
+    
     aVal = analogRead(_PLAY_BUTTON);
     if (aVal > 800) 
     {
@@ -148,10 +161,13 @@ bool buttonChanged()
     if (digitalRead(_FFWD_BUTTON) == LOW) 
     {
         delay(100);
-        if (digitalRead(_FFWD_BUTTON) == LOW) {
+        if (digitalRead(_FFWD_BUTTON) == LOW)
+        {
             SPrintln("FastForward button!");
             buttonChoice = '+';
-            while (digitalRead(_FFWD_BUTTON) == LOW) 
+            waitTime = millis();
+            while (   (digitalRead(_FFWD_BUTTON) == LOW)
+                   && ((millis() - waitTime) < 1000) ) 
             { 
               yield(); 
               httpServer.handleClient();
@@ -159,9 +175,11 @@ bool buttonChanged()
             return true;
         }
     }
-    if (digitalRead(_FREV_BUTTON) == LOW) {
+    if (digitalRead(_FREV_BUTTON) == LOW) 
+    {
         delay(100);
-        if (digitalRead(_FREV_BUTTON) == LOW) {
+        if (digitalRead(_FREV_BUTTON) == LOW) 
+        {
             SPrintln("FastReverse button!");
             buttonChoice = '-';
             while (digitalRead(_FREV_BUTTON) == LOW)
@@ -209,6 +227,71 @@ char read1Nibble(File fIn)
   } 
   
 } // read1Nibble()
+
+
+//------------------------------------------------------
+void readCatalog() 
+{
+  int  slotNr;
+  char dirName[5];
+  
+  Dir dir = LittleFS.openDir("/");
+
+  SPrintln("in readCatalog() ..");
+
+  for (slotNr=1; slotNr<=255; slotNr++) catalog[slotNr] = false;
+    
+  while (dir.next()) 
+  {
+    yield();  
+    if (dir.isDirectory()) // it's a map!!
+    {
+      snprintf(dirName, sizeof(dirName), "%s", dir.fileName().c_str());
+      if ((strlen(dirName) == 2) && isHex(dirName[0]) && isHex(dirName[1]))
+      {
+        sscanf(dirName, "%x", &slotNr);
+        if (slotNr >= 0 && slotNr <= 255)
+        {
+          //Debugf("Dir name[%s] -> dec[%d]\r\n", dirName, slotNr);
+          catalog[slotNr] = true;
+        }
+      }
+    }
+  } // while next..  
+  
+  actCatalog = true;
+  
+} // readCatalog();
+
+
+//------------------------------------------------------
+int getProgramSize(const char *fID, const char *fName) 
+{
+  File F;
+  char filePath[50], bIn;
+  int  bCount;
+  
+  snprintf(filePath, sizeof(filePath), "/%s/%s.hex", fID, fName);
+  F = LittleFS.open(filePath, "r");
+  if (!F)
+  {
+    SPrintf("Error opening [%s]\r\n", filePath);
+    return 0;
+  }
+  bCount = -6;  // skip first 6 bytes (ID, SAL, SAH)
+  while (F.available())
+  {
+    bIn = F.read();
+    if (bIn == '/') break;
+    if (   (bIn >= '0' && bIn <= '9')
+        || (bIn >= 'A' && bIn <= 'F')
+       ) bCount++;
+  }
+  F.close();
+
+  return ((bCount / 2)-1);
+  
+} // getProgramSize()
 
 
 //------------------------------------------------------
@@ -339,7 +422,11 @@ bool readProgDetailsByID(uint8_t fileID)
       if (dir.fileName().endsWith(".lck")) continue;
       if (dir.fileName().endsWith(".hex")) 
       {
-        progDetails.Size = (dir.fileSize()-(2+4+6)) /2; // ID, SAH, SAL, "2F", checkSum
+        fileName2Name(fileID, dir.fileName().c_str());
+        progDetails.Size = getProgramSize(progDetails.ID, progDetails.Name);
+        DebugTf("program[%s] => [%d bytes]\r\n", progDetails.Name, progDetails.Size);      
+        DebugTf("progSize[%d]\r\n", progDetails.Size);
+
         snprintf(filePath, sizeof(filePath), "%s/%s", idDir, dir.fileName().c_str());
         DebugTf("Checking [%s] ..\r\n", filePath);
 
@@ -366,7 +453,7 @@ bool readProgDetailsByID(uint8_t fileID)
           sprintf(progDetails.Strt, "%s", "????");
           sprintf(progDetails.End,  "%s", "????");
         }
-        fileName2Name(fileID, dir.fileName().c_str());
+
         DebugTf("> [%d] [%s] [%s] [%s]\r\n", fileID, progDetails.Name, progDetails.Strt, progDetails.End);
         snprintf(filePath, sizeof(filePath), "/%s/%s.lck", progDetails.ID, cBuff);
         lckFile = LittleFS.open(filePath, "r");
@@ -388,34 +475,38 @@ bool readProgDetailsByID(uint8_t fileID)
 //------------------------------------------------------
 uint8_t findFirstEmptyID() 
 {
-    Dir dir;
+  int slotNr;
 
-    SPrintln("\r\nFind First Empty ID on Tape\r");
-    snprintf(scrollName, sizeof(scrollName), "%s", "        <<        <<");
+  SPrintln("\r\nFind First Empty ID on Tape\r");
+  snprintf(scrollName, sizeof(scrollName), "%s", "        <<        <<");
+  scrollProgressTape(true);
+
+  for(slotNr=0; slotNr<0xFF;slotNr++)
+  {
+    yield();
     scrollProgressTape(true);
-
-    for(uint8_t fileID=0; fileID<=254; fileID++)
-    {
-      scrollProgressTape(true);
-      sprintf(idDir, "/%02x", fileID);
-      arrayToUpper(idDir, strlen(idDir));
-      DebugTf("check id[%s] ..\r\n", idDir);      
-      dir = LittleFS.openDir(idDir);
-
-      if (!dir.next()) 
-      {
-        DebugTf("First Empty Slot is [%02x]\r\n", fileID);
-        progDetails.numID = fileID;
-        sprintf(progDetails.ID, "%02x", fileID);
-        sprintf(progDetails.Name, "<EmptySlot>");
-        sprintf(progDetails.Strt, "????");
-        progDetails.Lock = false;
-        return fileID;
-      } 
-    }
+    Debugf("test catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
+    if (!catalog[slotNr]) break;
     
-    DebugTln("There are no more Empty Slot");
+  } // for ..
+
+  if (slotNr >= 0xFF)
+  {
+    SPrintln("There are no more Empty Slot");
     return 0;
+  }
+  
+  snprintf(progDetails.Name, sizeof(progDetails.Name), "<EmptySlot>");
+  snprintf(progDetails.ID, sizeof(progDetails.ID), "%02x", slotNr);
+  progDetails.numID = slotNr;
+  progDetails.Lock  = false;
+  progDetails.Size  = 0;
+  sprintf(progDetails.Strt, "%s", "????");
+  sprintf(progDetails.End,  "%s", "????");
+
+  actFileID = slotNr;
+  
+  return slotNr;
     
 }   // findFirstEmptyID()
 
@@ -423,34 +514,31 @@ uint8_t findFirstEmptyID()
 //------------------------------------------------------
 uint8_t findNextID(uint8_t actID) 
 {
-  bool lookFurther = true;
+  int slotNr;
   
   snprintf(scrollName, sizeof(scrollName), "%s", ">>        >>        ");
   scrollName[sizeof(scrollName)] = 0;
   scrollProgressTape(true);
+
+  if (!actCatalog)  readCatalog();
   
   savFileID = actID;
   if (actID < 0xFF) 
         actID++;
   else  actID = 0xFF;
 
-  while(lookFurther && (!readProgDetailsByID(actID)) )
+  for(slotNr=actID; slotNr<0xFF;slotNr++)
   {
     yield();
     scrollProgressTape(true);
-    if (actID < 0xFF) 
-    {
-      actID++;
-    }
-    else
-    {
-      actID       = savFileID;
-      actID       = findFirstEmptyID();
-      lookFurther = false;
-    }
-  } // while lookFurther
-
-  return actID;
+    Debugf("test catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
+    if (catalog[slotNr]) break;
+    
+  } // for ..
+  
+  if (slotNr >= 0xFF)
+        return savFileID;
+  else  return slotNr;
     
 } //  findNextID()
 
@@ -458,32 +546,32 @@ uint8_t findNextID(uint8_t actID)
 //------------------------------------------------------
 uint8_t findPreviousID(uint8_t actID) 
 {
-  bool lookFurther = true;
+  int slotNr;
   
   snprintf(scrollName, sizeof(scrollName), "%s", "        <<        <<");
   scrollProgressTape(false);
 
   SPrintln("Find Previous ID on Tape\r");
-  if (actID == 0) 
-  {
-    return actID;
-  }
-  actID--;
-  lookFurther = true;
-  while(lookFurther && (!readProgDetailsByID(actID)) )
+
+  if (!actCatalog)  readCatalog();
+  
+  savFileID = actID;
+  if (actID > 0x00) 
+        actID--;
+  else  actID = 0x00;
+
+  for(slotNr=actID; slotNr>=0; slotNr--)
   {
     yield();
-    scrollProgressTape(false);
-
-    actID--;
-    if (actID < 0) 
-    {
-      actID   = 0;
-      lookFurther = false; 
-    }
-  } // while lookFurther
-
-  return actID;
+    scrollProgressTape(true);
+    Debugf("test catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
+    if (catalog[slotNr]) break;
+    
+  } // for ..
+  
+  if (slotNr < 0x00)
+        return savFileID;
+  else  return slotNr;
 
 } //  findPreviousID()
 
@@ -567,17 +655,20 @@ void listProgramFiles()
 {
     uint8_t fileCount = 0;
     uint8_t lenName;
-    String space = "                           ";
+    String  space = "                           ";
     uint8_t savFileID = actFileID;
+    int     slotNr, IDnum;
                             
     SPrintln("\r\nList files on Tape\r");
     webSocket.broadcastTXT("blockButtons");
     displayMsg("Wait .. \nListing Files\nTakes some time"); 
 
     Dir dir;
-    for(uint8_t fileID=0; fileID<=254; fileID++)
+    for(slotNr=0; slotNr<=254; slotNr++)
     {
-      sprintf(idDir, "/%02x", fileID);
+      if (!catalog[slotNr]) continue;
+      IDnum = slotNr;
+      sprintf(idDir, "/%02x", IDnum);
       arrayToUpper(idDir, strlen(idDir));
       //DebugTf("check id[%s] ..\r\n", idDir);      
       dir = LittleFS.openDir(idDir);
@@ -588,14 +679,12 @@ void listProgramFiles()
         if (dir.fileName().endsWith(".lck")) continue;
         if (dir.fileName().endsWith(".txt")) continue;
         fileCount++;
-        lenName = (25 - dir.fileName().length());
-        fileName2Name(fileID, dir.fileName().c_str());
+        //lenName = (25 - dir.fileName().length());
+        fileName2Name(IDnum, dir.fileName().c_str());
         //DebugTf("> [%s]\r\n", progDetails.Name);
-        File f = dir.openFile("r");
+        //File f = dir.openFile("r");
         //SPrint(space.substring(0, (25 - dir.fileName().length())));
-        SPrintf("[%s] %s %s %d\n", progDetails.ID, progDetails.Name
-                                  , space.substring(0, lenName).c_str()
-                                  , f.size());
+        SPrintf("[%s] %s\r\n", progDetails.ID, progDetails.Name);
             
       } // while ..
     }
@@ -622,7 +711,7 @@ void showDescription()
       while (D.available())
       {
         memset(cBuff, 0, sizeof(cBuff));
-        D.readBytesUntil('\n', cBuff, 40);
+        D.readBytesUntil('\n', cBuff, sizeof(cBuff));
         SPrintln(cBuff);
       }
       D.close();
@@ -754,19 +843,20 @@ void printMenu() {
     int8_t sp, p;
     
     SPrint("\nMenu ");
-    for (p=strlen(progDetails.Name); p<29; p++) { SPrint(" "); }
+    for (p=strlen(progDetails.Name); p<22; p++) { SPrint(" "); }
     SPrintf("[%s]", progDetails.ID); 
     if (progDetails.Lock)   SPrint("* ");
     else                    SPrint("  ");
     SPrintf("- %s", progDetails.Name);
-    SPrintf(" [$%s]\n", progDetails.Strt);
+    SPrintf(" [$%s][$%s]\r\n", progDetails.Strt, progDetails.End);
     SPrintln("--------------------------------------------------\r");
-    SPrintln("   P    - Play from Tape (uKIM enter [0x1873 G])\r");
-    SPrintln("   R    - Record to Tape (uKIM enter [0x1800 G])\r");
+    SPrintln("   P    - Play from Tape (uKIM enter [$1873 G])\r");
+    SPrintln("   R    - Record to Tape (uKIM enter [$1800 G])\r");
     SPrintln("   +    - FastForw. to next file on tape\r");
     SPrintln("   -    - FastRev. to previous file on tape\r");
     SPrintf( "   C    - Change Name for Program [%s]\r\n", progDetails.ID);
     SPrintf( "   D    - Show Description of Program [%s]\r\n", progDetails.Name);
+    SPrintln("   F    - Find first Free Slot\r");
     SPrint(  "   V    - toggle Verbose (is now ");
     if (doVerbose) SPrintln("ON)\r");
     else           SPrintln("OFF)\r");
@@ -786,18 +876,18 @@ void printMenu() {
 //------------------------------------------------------
 void setup() 
 {
-  Serial.begin(115200);
+  Serial.begin(19200);
   while(!Serial) { delay(10); }
   Serial.println();
-  Serial.println("\r\n[uTapeEmulator (v2)]");
+  Serial.println("\r\n[uTapeEmulator (v2.0)]");
   Serial.flush();
-  pinMode(_LED_PIN, OUTPUT);
-  digitalWrite(_LED_PIN, HIGH);
-  pinMode(_TAPE_IN_PIN, INPUT);
-  pinMode(_TAPE_OUT_PIN, OUTPUT);
-  pinMode(_PLAY_BUTTON, INPUT);
-  pinMode(_FFWD_BUTTON, INPUT_PULLUP);
-  pinMode(_FREV_BUTTON, INPUT_PULLUP);
+  pinMode(_LED_PIN,       OUTPUT);
+  digitalWrite(_LED_PIN,  HIGH);
+  pinMode(_PLL_RESET,     OUTPUT);
+  pinMode(_TAPE_OUT_PIN,  OUTPUT);
+  pinMode(_PLAY_BUTTON,   INPUT);
+  pinMode(_FFWD_BUTTON,   INPUT);
+  pinMode(_FREV_BUTTON,   INPUT);
 
   turnOnOledDisplay();
   delay(1000);
@@ -826,8 +916,6 @@ void setup()
   //display.flipScreenVertically();
   //display.display();
 
-  startMDNS(_HOSTNAME);
-
   startTelnet();
 
   webSocket.begin();
@@ -855,15 +943,25 @@ void setup()
   httpServer.begin();
   SPrintln("HTTP httpServer started");
 
-  doVerbose = false;
-  
+  startMDNS(_HOSTNAME);
+
   processKeyTimer    = millis();
   processButtonTimer = millis();
   dimOledTimer       = millis();
-  
+
+  readCatalog();
+
+  doVerbose = false;
+    
   SPrintln();
   readProgDetailsByID(actFileID);
+
   printMenu();
+
+  //--- reset ATtinyPLL ---------
+  digitalWrite(_PLL_RESET, LOW);
+  delay(10);
+  digitalWrite(_PLL_RESET, HIGH);
 
 }   // setup()
 
@@ -879,7 +977,7 @@ void loop()
   if (Serial.available()) 
   {
     cIn = Serial.read();
-    if (cIn > ' ' && cIn <= 'z') 
+    if ( (cIn > ' ' && cIn <= 'z') || (cIn == '\n') ) 
     {
       mChoice = toupper(cIn);
     }
@@ -887,7 +985,7 @@ void loop()
   if (TelnetStream.available()) 
   {
     cIn = TelnetStream.read();
-    if (cIn > ' ' && cIn <= 'z') 
+    if ( (cIn > ' ' && cIn <= 'z') || (cIn == '\n') ) 
     {
       mChoice = toupper(cIn);
     }
@@ -901,7 +999,7 @@ void loop()
       DebugTf("Button Pressed value is [%c]\r\n", buttonChoice);  
     }
   }
-    
+
   if ((millis() - dimOledTimer) > _DIMOLEDTIME) 
   {
     turnOffOledDisplay();
@@ -919,7 +1017,11 @@ void loop()
         mChoice = buttonChoice;
         buttonChoice = 0;
   }
-  if (mChoice != 0) 
+  if (   mChoice == 'C' || mChoice == 'D' || mChoice == 'L' 
+      || mChoice == 'P' || mChoice == 'R' || mChoice == 'T'
+      || mChoice == 'V' || mChoice == 'H' || mChoice == 'F' 
+      || mChoice == '+' || mChoice == '-'
+     ) 
   {
     if (displayIsOff) 
     {
@@ -929,7 +1031,7 @@ void loop()
  
     } else 
     {
-      SPrintf(" choise is [%c]\r\n", mChoice);
+      SPrintf(" choice is [%c]\r\n", mChoice);
       switch (mChoice)
       {
         case 'C':   if (getNewProgName())
@@ -940,6 +1042,10 @@ void loop()
                     printMenu();
                     break;
         case 'D':   showDescription();
+                    printMenu();
+                    break;
+        case 'F':   actFileID = findFirstEmptyID();
+                    //-readProgDetailsByID(actFileID);
                     printMenu();
                     break;
         case 'L':   listProgramFiles();
@@ -960,15 +1066,21 @@ void loop()
                     printMenu();
                     break;
         case '+':   actFileID = findNextID(actFileID);
+                    readProgDetailsByID(actFileID);
                     scrollInterval = millis();
                     printMenu();
                     break;
         case '-':   actFileID = findPreviousID(actFileID);
                     scrollInterval = millis();
+                    readProgDetailsByID(actFileID);
                     printMenu();
                     break;
         default:    printMenu();
       } // switch..
+      
+      if (Serial.available())       Serial.read();
+      if (TelnetStream.available()) TelnetStream.read();
+
       mChoice = 0;
       dimOledTimer = millis();
     } // else ..

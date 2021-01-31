@@ -76,13 +76,7 @@ void handleRoot() {                     // HTML FSexplorer
   FSexplorerHTML += formatBytes(fs_info.totalBytes).c_str();      
   FSexplorerHTML += "<br>Waarvan in gebruik: ";
   FSexplorerHTML += formatBytes(fs_info.usedBytes).c_str();      
-  FSexplorerHTML += "<p><hr>\r\n";
-  
-  FSexplorerHTML += "<div style='width: 60%'>";
-  FSexplorerHTML += "  <form style='float: left;' action='/update' method='GET'><big>Update Firmware </big>";
-  FSexplorerHTML += "    <input type='submit' class='button' name='SUBMIT' value='select Firmware' ENABLED/>";
-  FSexplorerHTML += "  </form>";
-  FSexplorerHTML += "</div>";
+  FSexplorerHTML += "<p>\r\n";
   
   FSexplorerHTML += "<br><hr>";
   FSexplorerHTML += "<div style='width: 60%'>";

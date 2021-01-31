@@ -1,0 +1,9 @@
+From "The First Book of KIM"
+
+Program VUTAPE lets you actually see the contents of a KIM format tape as it's going by.  It shows the data going by very quickly, because of the tape speed..but you can at least "sense" the kind of material on the tape.
+
+In case of tape troubles, this should give you a hint as to the area of your problem: nothing? noise? dropouts? And you can prepare a test tape (see below) to check out the tape quality and your recorder.  The test tape will also help you establish the best settings for your volume and tone controls.
+
+Perhaps VUTAPE's most useful function, though, is to give you a "feeling" for how data is stored on tape.  You can actually watch the processor trying to synchronize into the bit stream.  Once it's synched, you'll see the characters rolling off the tape...until an END or illegal character drops you back into the sync mode again.  It's educational to watch.  And since the program is fairly short, you should be able to trace out just how the processor tracks the input tape.
+
+VUTAPE starts at location 0000 and is fully relocatable (so you can load it anyplace it fits).

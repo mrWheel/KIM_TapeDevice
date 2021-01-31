@@ -44,7 +44,7 @@ void displayMsg(String);
 #endif
 #include <WiFiManager.h>       // version 0.15.0 - https://github.com/tzapu/WiFiManager
 // included in main program: #include <TelnetStream.h>       // Version 0.0.1 - https://github.com/jandrassy/TelnetStream
-#include <WebSocketsServer.h>
+#include <WebSocketsServer.h> // https://github.com/Links2004/arduinoWebSockets
 
 WebSocketsServer webSocket = WebSocketsServer(81);
 
@@ -113,10 +113,15 @@ void startWiFi(const char* hostname, int timeOut)
   SPrintln();
 
 #ifdef USE_UPDATE_SERVER
-  httpUpdater.setup(&httpServer);
+  //const char *update_path = "/firmware";
+  //const char *update_username = "admin";
+  //const char *update_password = "admin";
+
+  httpUpdater.setup(&httpServer); // , update_path, update_username, update_password);
   httpUpdater.setIndexPage(UpdateServerIndex);
   httpUpdater.setSuccessPage(UpdateServerSuccess);
 #endif
+
   DebugTf(" took [%d] seconds => OK!\r\n", (millis() - lTime) / 1000);
   
 } // startWiFi()
@@ -127,6 +132,12 @@ void startTelnet()
 {
   TelnetStream.begin();
   DebugTln(F("Telnet server started .."));
+  TelnetStream.flush();
+  while(TelnetStream.available()) 
+  {
+    TelnetStream.read();
+    delay(5);
+  }
   TelnetStream.flush();
 
 } // startTelnet()

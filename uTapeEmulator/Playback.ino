@@ -47,15 +47,19 @@ void sendOneBit(boolean cBit) {
 
 
 //------------------------------------------------------
-void sendOneByte(byte cByte) {
+void sendOneByte(byte cByte) 
+{
     uint8_t mask;
        
-    for (int b=0; b<=7; b++) {
+    for (int b=0; b<=7; b++) 
+    {
         mask = 1;
         mask <<= (b);
-        if (cByte & mask) {
+        if (cByte & mask) 
+        {
             sendOneBit(1);
-        } else {
+        } else 
+        {
             sendOneBit(0);
         }
     }
@@ -64,27 +68,34 @@ void sendOneByte(byte cByte) {
 
 
 //------------------------------------------------------
-void sendTwoAscii(byte cByte) {
+void sendTwoAscii(byte cByte) 
+{
     uint8_t mask;
        
     lByte =  cByte & 0xF;
     hByte = (cByte >> 4) & 0xF;
     
-    for (int b=0; b<=7; b++) {
+    for (int b=0; b<=7; b++) 
+    {
         mask = 1;
         mask <<= (b);
-        if (ascii[hByte] & mask) {
+        if (ascii[hByte] & mask) 
+        {
             sendOneBit(1);
-        } else {
+        } else 
+        {
             sendOneBit(0);
         }
     }
-    for (int b=0; b<=7; b++) {
+    for (int b=0; b<=7; b++) 
+    {
         mask = 1;
         mask <<= (b);
-        if (ascii[lByte] & mask) {
+        if (ascii[lByte] & mask) 
+        {
             sendOneBit(1);
-        } else {
+        } else 
+        {
             sendOneBit(0);
         }
     }
@@ -118,21 +129,20 @@ void playbackTape()
     sendOneByte(0x16);
   }
 
-  SPrint("Send '*' (0x2A)");
+  SPrintln("Send '*' (0x2A)\r");
   sendOneByte('*');
-  SPrintln("\r\n---------------------------------");
+  SPrintln("---------------------------------\r");
 
-  tmpB = 0;
+  tmpB = 12;
   while (dataFile.available()) 
   {
         yield();
         hByte = (char)dataFile.read();
         // skip non-printable chars ---------------
         if (hByte <= ' ' || hByte >= '}') continue;
-        if ((tmpB%16) == 0)     {SPrintln();} 
-        else if ((tmpB%8) == 0) {SPrint(" ");}
+        if ((++tmpB%8) == 0)  { SPrint(" ");    } 
+        if ((tmpB%16)  == 0)  { SPrintln("\r"); }
 
-        tmpB++;
         if (   (hByte >= '0' && hByte <= '9') 
             || (hByte >= 'A' && hByte <= 'F') ) {
                 actByte = char2Byte(hByte) * 0x10;
@@ -150,10 +160,13 @@ void playbackTape()
         
         } else {    // not in 0-9, A-F
                 actByte = hByte;
-                SPrint(" >> ");            
+                if (actByte == '/') { SPrint("\r\n"); tmpB = 0; }          
                 if (actByte < 0x10) SPrint("0"); 
                 SPrint(actByte, HEX);  
-                SPrintf(" (%c)\r\n", actByte);         
+                SPrintf(" (%c) ", actByte);         
+                //if (actByte == '*')   // allready send!
+                //      tmpB = 11; 
+                //else  
                 sendOneByte(actByte);
 
         }
@@ -169,6 +182,12 @@ void playbackTape()
     // EOT 0x04
     // 0b00000100
     sendOneByte(0x04);
+  }
+  for (int L=0; L<2; L++) 
+  {
+    // EOT 0x00
+    // 0b00000000
+    sendOneByte(0x00);
   }
 
   dataFile.close();

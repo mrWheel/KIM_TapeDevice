@@ -1,9 +1,33 @@
 /*
-**  Program   : SPIFFSexplorer 
+**  Utility  : SPIFFSexplorer 
+**   
+**  The purpose of this program is to upload programs that you saved
+**  on the Solid State Tape Device (uTape) to your computer.
+**  
+**  The pré 2.0 version of the uTape did not have this functionality.
+**  
+**  Point your browser to the correct IP address (see Serial Monitor during
+**  startup) or to "SPIFFSexplorer.local"
+**
+**  Compile this program with the correct setting of the memoty-model
+**  otherwise it will not be able to read SPIFFS.
+**  You either compiled your version with
+**  
+**  - Flash size: "4M (3M SPIFFS)" 
+**  - Flash size: "4M (2M SPIFFS)"  
+**  
+**  You should compile this program with the same setting!
+**  
+**  If you don't it will only show an empty files list and you can
+**  compile it again with an other Flash size until you can see
+**  al your program's.
+**  
+**  DO NOT UPLOAD A DATA MAP TO YOUR DEVICE OR YOU WILL LOSE 
+**  ALL FILES ON IT WITH NO WAY TO RECOVER!!
 */
-#define _FW_VERSION "v0.0.0 (DD-MM-EEYY)"
+#define _FW_VERSION "v0.0.0 (31-01-2021)"
 /*
-**  Copyright (c) 2019 Willem Aandewiel
+**  Copyright (c) 2021 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************      
@@ -11,7 +35,7 @@
 
     - Board: "Generic ESP8266 Module"
     - Flash mode: "DIO" | "DOUT"    
-    - Flash size: "4M (3M SPIFFS)"  
+    - Flash size: "4M (3M SPIFFS)" => or how you compiled your version  
     - DebugT port: "Disabled"
     - DebugT Level: "None"
     - IwIP Variant: "v2 Lower Memory"
@@ -21,7 +45,7 @@
     - Flash Frequency: "40MHz"
     - CPU Frequency: "80 MHz"
     - Buildin Led: "2"  // 
-    - Upload Speed: "115200"                                                                                                                                                                                                                                                 
+    - Upload Speed: "115200"    => what-ever you're confortable with                                                                                                                                                                                                                                             
     - Erase Flash: "Only Sketch"
     - Port: <select correct port>
 */
