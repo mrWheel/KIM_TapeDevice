@@ -18,7 +18,6 @@ body {
   height: 50px;
   border: 1px solid black;
 }
-
 .columns {
   display: flex;
   flex-direction: column;

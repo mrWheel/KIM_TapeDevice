@@ -3,7 +3,7 @@
 **  Program  : ATtinyPLL2
 **  Copyright (c) 2017-2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 (29-01-2021)"
+#define _FW_VERSION "v2.0.0 (03-02-2021)"
 /* 
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -88,13 +88,14 @@
 //     _IN_FROM_KIM --> INT0 -|PB1   PA1|- TxD --> _PLL_TX (Serial)
 //                    /RESET -|PB3   PA2|- RxD <-- _PLL_RX (not used)
 //                            |PB2   PA3|
-//                            |PA7   PA4|- SCK
+//                   LED <-- -|PA7   PA4|- SCK
 //                      MOSI -|PA6   PA5|- MISO
 //                            +---------+
 //
     #define _IN_FROM_KIM    PIN_PB1     // DIL-3 / ArduinoPin D9
     #define _PLL_TX         PIN_PA1     // DIL-12 / Serial TX
     #define _PLL_RX         PIN_PA2     // DIL-11 / Serial RX
+    #define _PLL_LED        PIN_PA7
     //
     #define _MIDFREQ            340
     #define _MIDTRAINDURATION  3700
@@ -319,22 +320,21 @@ void setup()
     pinMode(_IN_FROM_KIM, INPUT); 
     pinMode(_PLL_TX,      OUTPUT);
     pinMode(PIN_PA0,      OUTPUT);
+    pinMode(_PLL_LED,     OUTPUT);
 
     Serial.begin(19200);
     while(!Serial) { delay(100); }
-
-//#if defined(__AVR_ATtiny841__)
-//    UCSR0B &=~(1<<RXEN0); // disable RX
-//#endif
 
     for(int i=0; i<5; i++)
     {
       delay(100);
       DPrintln("\r\n===== ATtinyPLL2 =====");
+      digitalWrite(_PLL_LED, !digitalRead(_PLL_LED));
     }
     
     DPrint("IN FROM KIM : "); DPrintln(_IN_FROM_KIM);  
     DPrint("TX TO ESP   : "); DPrintln(_PLL_TX);
+    DPrint("_PLL_LED    : "); DPrintln(_PLL_LED);
 
     ISRstate          = ISR_INIT;
     ISRbitState       = BIT_START;
@@ -342,7 +342,8 @@ void setup()
     inactiveTime      = millis();
     midFrequency      = _MIDFREQ;
     midTrainDuration  = _MIDTRAINDURATION;
-  
+    digitalWrite(_PLL_LED, LOW);
+    
     attachInterrupt(digitalPinToInterrupt(_IN_FROM_KIM), ISRgetByte, RISING);
     
 }   // setup()
@@ -355,6 +356,7 @@ void loop()
     {
       inactiveTime  = millis();
       ISRstate      = ISR_INIT;
+      digitalWrite(_PLL_LED, LOW);
       ISRhasChar    = false;
       ISRbyteCount  = 0;
       tunePLL       = true;
@@ -400,6 +402,7 @@ void loop()
       if (ISRchar == '*')
       {
         DPrint(" ");        // just for the debug lay-out 
+        digitalWrite(_PLL_LED, HIGH);
         ISRbyteCount = -7;  // just for the debug lay-out
       }
       else if (ISRchar == '/')
@@ -411,6 +414,7 @@ void loop()
       {
         DPrint("EOT");      // just for the debug lay-out
         ISRbyteCount = 1;   // just for the debug lay-out
+        digitalWrite(_PLL_LED, LOW);
       }
       
       ISRbyteCount++;

@@ -1,0 +1,23 @@
+
+TO START: Type "4065" <space> "G"
+
+      MEMORY SIZE? <enter>
+      TERMINAL WIDTH? <enter>
+      WANT SIN-COS-TAN-ATN? Y (or N)
+
+      24510 BYTES FREE
+
+      OK
+
+MOS TECH 6502 BASIC V1.1
+COPYRIGHT 1977 BY MICROSOFT CO.
+
+This is the programming language Basic for the KIM-1 computer.
+
+Documentation can be found at:
+
+http://retro.hansotten.nl - section KIM-1
+
+load address $2000, start at $4065
+
+

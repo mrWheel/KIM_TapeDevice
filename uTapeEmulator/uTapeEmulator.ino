@@ -3,7 +3,7 @@
  *  Program  : uTapeEmulator
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (31-01-2021)"
+#define _FW_VERSION "v2.0.0 WS (07-02-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -15,7 +15,8 @@
 
 #define USE_UPDATE_SERVER
 #define DEBUG_ON
-#define _HAS_BUTTONS    false    // false=no buttons, true=yes we have buttons
+#define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
+#define _REAL_KIM1      false   // is it a "real" KIM-1?
 
 //---------- no need to change enything after this ------
 
@@ -38,8 +39,8 @@
 #define _SCL            5       // D1   - GPIO05
 
 #define _PLL_RESET      2       // D4   - GPIO02
-#define _PLL_IN_PIN     13      // D7   - GPIO13  // swaped 27-01
-#define _TAPE_OUT_PIN   12      // D6   - GPIO12  // swaped 27-01
+#define _PLL_IN_PIN     13      // D7   - GPIO13  
+#define _TAPE_OUT_PIN   12      // D6   - GPIO12  
 
 #define _PLAY_BUTTON    0       // A0
 #define _FREV_BUTTON    14      // D5
@@ -110,6 +111,16 @@ void printByte(int c) {
         }
     }
 }   // printByte()
+
+//------------------------------------------------------
+void resetATtinyPLL() 
+{
+  delay(50);
+  digitalWrite(_PLL_RESET, LOW);
+  delay(50);
+  digitalWrite(_PLL_RESET, HIGH);
+
+}   // resetATtinyPLL()
 
 
 //------------------------------------------------------
@@ -884,7 +895,7 @@ void setup()
   pinMode(_LED_PIN,       OUTPUT);
   digitalWrite(_LED_PIN,  HIGH);
   pinMode(_PLL_RESET,     OUTPUT);
-  pinMode(_TAPE_OUT_PIN,  OUTPUT);
+  pinMode(_TAPE_OUT_PIN,  INPUT_PULLUP); // set to OUTPUT only when sending to KIM
   pinMode(_PLAY_BUTTON,   INPUT);
   pinMode(_FFWD_BUTTON,   INPUT);
   pinMode(_FREV_BUTTON,   INPUT);
@@ -958,10 +969,8 @@ void setup()
 
   printMenu();
 
-  //--- reset ATtinyPLL ---------
-  digitalWrite(_PLL_RESET, LOW);
-  delay(10);
-  digitalWrite(_PLL_RESET, HIGH);
+  resetATtinyPLL();
+  resetATtinyPLL();
 
 }   // setup()
 
@@ -1109,4 +1118,5 @@ void loop()
 * OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
 * THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 * 
-***************************************************************************/
+****************************************************************************
+*/

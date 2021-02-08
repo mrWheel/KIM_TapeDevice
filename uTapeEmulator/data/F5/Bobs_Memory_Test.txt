@@ -1,0 +1,31 @@
+First page to test: $0200
+Last page to test : $0201
+Program Start @ $0202 [G]
+
+This memory test was originally based on Jim Butterfield's
+memory test program in the First Book of Kim, but has
+grown a bit.
+
+This now tests every memory location using a rolling 9-bit
+pattern.  Ie the pattern repeats every 9 bytes, so this
+will detect most shorted address line problems.  I use
+this to test memory boards, so it will run forever unless
+an error is detected.  At the end of each pass, a '.' is
+printed.
+
+This does output to the TTY port, so if you're only using
+the default KIM display, the output functions will need to
+be tweaked.  Not hard to do, but I didn't need it.
+
+Written February 2006 by Bob Applegate, but it uses some
+bits of code from Jim Butterfield, and Ross Archer
+(http://www.6502.org/source/io/primm.htm).
+
+bob@applegate.org
+www.k2ut.org - look for my KIM page
+
+Rev 1.0 - 02/02/2006
+
+
+
+

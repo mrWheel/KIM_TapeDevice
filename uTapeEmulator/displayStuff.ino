@@ -1,17 +1,21 @@
 /*
+***************************************************************************  
+ *  Part of : uTapeEmulator
+ *  Copyright (c) 2021 Willem Aandewiel
+ *
+ *  TERMS OF USE: MIT License. See bottom of file.  
  * 
- *   0,0  +--------------------------+ 128,0
+ *    0,0 +--------------------------+ 128,0
  *        |                          |
  *        |                          |
  *        |                          |
  *        |                          |
- *  64,0  +--------------------------+  18,64
+ *   0,64 +--------------------------+ 128,64
  * 
  */
 
 
-
-
+//------------------------------------------------------
 void turnOffOledDisplay() {
     display.clear();
     display.display();
@@ -20,6 +24,7 @@ void turnOffOledDisplay() {
 }   // turnOffOledDisplay()
 
 
+//------------------------------------------------------
 void turnOnOledDisplay() 
 {
     display.init();
@@ -45,6 +50,7 @@ void turnOnOledDisplay()
 }   // turnOnOledDisplay()
 
 
+//------------------------------------------------------
 void displayMsgAndWait(String Msg, uint8_t wait) 
 {
     String wOut[4];
@@ -73,6 +79,7 @@ void displayMsgAndWait(String Msg, uint8_t wait)
 }   // displayMsgAndWait()
 
 
+//------------------------------------------------------
 void displayMsg(String Msg) 
 {
     displayMsgAndWait(Msg, 0);
@@ -80,6 +87,31 @@ void displayMsg(String Msg)
 }   // displayMsg()
 
 
+//------------------------------------------------------
+void displayMsg(uint8_t line, String Msg, uint8_t wait) 
+{
+  display.setColor(BLACK);
+  display.setFont(ArialMT_Plain_16);
+  if (line == 0)
+  {
+    display.clear();
+  }
+  else
+  {
+    display.fillRect(0, (18*line), 128,  (18*line)+17);
+  }
+  display.setColor(WHITE);
+  display.drawString(0, (18*line),  Msg);
+  display.display();
+  if (wait) 
+  {
+    delay(wait * 1000);
+  }
+    
+}   // displayMsg()
+
+
+//------------------------------------------------------
 void displayProgDetails() 
 {
     String tmpString;
@@ -107,6 +139,7 @@ void displayProgDetails()
 }   // displayProgDetails()
 
 
+//------------------------------------------------------
 void scrollProgName() 
 {
     int16_t pBuff;
@@ -149,7 +182,7 @@ void scrollProgName()
 }   // scrollProgName()
 
 
-
+//------------------------------------------------------
 void scrollProgressTape(bool up) 
 {
     volatile int sdPos;
@@ -186,3 +219,27 @@ void scrollProgressTape(bool up)
     display.display();
     
 }   // scrollProgressTape()
+
+/***************************************************************************
+*
+* Permission is hereby granted, free of charge, to any person obtaining a
+* copy of this software and associated documentation files (the
+* "Software"), to deal in the Software without restriction, including
+* without limitation the rights to use, copy, modify, merge, publish,
+* distribute, sublicense, and/or sell copies of the Software, and to permit
+* persons to whom the Software is furnished to do so, subject to the
+* following conditions:
+*
+* The above copyright notice and this permission notice shall be included
+* in all copies or substantial portions of the Software.
+*
+* THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+* OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+* MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+* IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+* CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT
+* OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR
+* THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+* 
+****************************************************************************
+*/

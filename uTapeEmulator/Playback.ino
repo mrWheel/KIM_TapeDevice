@@ -7,18 +7,20 @@
 ***************************************************************************  
 */
 
-#define _SHORT   300           // Standaard is 2484 max is 8000
+#define _SHORT   300      //300     // Standaard is 2484 max is 8000
 #define _LONG    (_SHORT * 2)
 
 
 //------------------------------------------------------
-byte char2Byte(char cIn) {
+byte char2Byte(char cIn) 
+{
     byte iByte;
 
-    if (cIn >= '0' && cIn <= '9') {
+    if (cIn >= '0' && cIn <= '9') 
+    {
         iByte = (cIn - '0') & 0xF;
-            
-    } else  {
+    } else  
+    {
         iByte = ((cIn - '0')-7) & 0xF;
     }
 
@@ -28,21 +30,40 @@ byte char2Byte(char cIn) {
 
 
 //------------------------------------------------------
-void sendOneBit(boolean cBit) {
-
-    if (cBit) {
+void sendOneBit(boolean cBit) 
+{
+#if (_REAL_KIM1 == true)
+    if (cBit) 
+    {
+        digitalWrite(_TAPE_OUT_PIN, LOW);
+        delayMicroseconds(_SHORT);
+        digitalWrite(_TAPE_OUT_PIN, HIGH);
+        delayMicroseconds(_LONG);
+        
+    } else 
+    {
+        digitalWrite(_TAPE_OUT_PIN, LOW);
+        delayMicroseconds(_LONG);
+        digitalWrite(_TAPE_OUT_PIN, HIGH);
+        delayMicroseconds(_SHORT);
+    }
+#else
+    if (cBit) 
+    {
         digitalWrite(_TAPE_OUT_PIN, HIGH);
         delayMicroseconds(_SHORT);
         digitalWrite(_TAPE_OUT_PIN, LOW);
         delayMicroseconds(_LONG);
         
-    } else {
+    } else 
+    {
         digitalWrite(_TAPE_OUT_PIN, HIGH);
         delayMicroseconds(_LONG);
         digitalWrite(_TAPE_OUT_PIN, LOW);
         delayMicroseconds(_SHORT);
     }
-  
+
+#endif
 } // sendOneBit()
 
 
@@ -119,6 +140,8 @@ void playbackTape()
     return;
   }
 
+  pinMode(_TAPE_OUT_PIN, OUTPUT);
+
   getTimingDuration = millis() + 3000;
   SPrintln("Send SYNC (0x16) for 3 seconds");
   while (millis() < getTimingDuration) 
@@ -136,40 +159,39 @@ void playbackTape()
   tmpB = 12;
   while (dataFile.available()) 
   {
-        yield();
-        hByte = (char)dataFile.read();
-        // skip non-printable chars ---------------
-        if (hByte <= ' ' || hByte >= '}') continue;
-        if ((++tmpB%8) == 0)  { SPrint(" ");    } 
-        if ((tmpB%16)  == 0)  { SPrintln("\r"); }
+    yield();
+    hByte = (char)dataFile.read();
+    // skip non-printable chars ---------------
+    if (hByte <= ' ' || hByte >= '}') continue;
+    if ((++tmpB%8) == 0)  { SPrint(" ");    } 
+    if ((tmpB%16)  == 0)  { SPrintln("\r"); }
 
-        if (   (hByte >= '0' && hByte <= '9') 
-            || (hByte >= 'A' && hByte <= 'F') ) {
-                actByte = char2Byte(hByte) * 0x10;
-                if (dataFile.available()) {
-                    lByte = (char)dataFile.read();
-                    actByte += char2Byte(lByte);
-                }
-                SPrint(" ");
-                if (actByte < 0x10) {
-                    SPrint("0"); 
-                }
+    if (   (hByte >= '0' && hByte <= '9') 
+        || (hByte >= 'A' && hByte <= 'F') ) 
+    {
+      actByte = char2Byte(hByte) * 0x10;
+      if (dataFile.available()) {
+        lByte = (char)dataFile.read();
+        actByte += char2Byte(lByte);
+      }
+      SPrint(" ");
+      if (actByte < 0x10) 
+      {
+        SPrint("0"); 
+      }
                 
-                SPrint(actByte, HEX);  
-                sendTwoAscii(actByte);
+      SPrint(actByte, HEX);  
+      sendTwoAscii(actByte);
         
-        } else {    // not in 0-9, A-F
-                actByte = hByte;
-                if (actByte == '/') { SPrint("\r\n"); tmpB = 0; }          
-                if (actByte < 0x10) SPrint("0"); 
-                SPrint(actByte, HEX);  
-                SPrintf(" (%c) ", actByte);         
-                //if (actByte == '*')   // allready send!
-                //      tmpB = 11; 
-                //else  
-                sendOneByte(actByte);
-
-        }
+    } else   // not in 0-9, A-F
+    {
+      actByte = hByte;
+      if (actByte == '/') { SPrint("\r\n"); tmpB = 0; }          
+      if (actByte < 0x10) { SPrint("0"); }
+      SPrint(actByte, HEX);  
+      SPrintf(" (%c) ", actByte);         
+      sendOneByte(actByte);
+    }
             
   }   // while there is data
 
@@ -183,14 +205,18 @@ void playbackTape()
     // 0b00000100
     sendOneByte(0x04);
   }
-  for (int L=0; L<2; L++) 
+  /*
+  for (int L=0; L<4; L++) 
   {
-    // EOT 0x00
+    // NUL 0x00
     // 0b00000000
     sendOneByte(0x00);
   }
-
+  */
+  
   dataFile.close();
   SPrintln("\r\nDone..");
 
+  pinMode(_TAPE_OUT_PIN, INPUT_PULLUP);
+  
 }   // playbackTape()

@@ -135,6 +135,7 @@ bool handleList()
 
 void deleteRecursive(const String &path) 
 {
+  actCatalog = false;
   if (LittleFS.remove(path)) 
   {
     LittleFS.open(path.substring(0, path.lastIndexOf('/')) + "/", "w");
@@ -151,6 +152,7 @@ void deleteRecursive(const String &path)
 
 bool handleFile(String &&path) 
 {
+  actCatalog = false;
   if (httpServer.hasArg("new")) 
   {
     String folderName {httpServer.arg("new")};
@@ -176,6 +178,8 @@ bool handleFile(String &&path)
 void handleUpload() 
 {                            // Dateien ins Filesystem schreiben
   static File fsUploadFile;
+  actCatalog = false;
+  
   HTTPUpload& upload = httpServer.upload();
   if (upload.status == UPLOAD_FILE_START) 
   {
@@ -231,7 +235,7 @@ void updateFirmware()
 {
 #ifdef USE_UPDATE_SERVER
   DebugTln(F("Redirect to updateIndex .."));
-  doRedirect("wait ... ", 1, "/updateIndex", false);
+  doRedirect("wait ... ", 1, "/updateIndex ", false);
 #else
   doRedirect("UpdateServer not available", 10, "/", false);
 #endif

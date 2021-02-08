@@ -17,10 +17,14 @@ void recordTape()
     
     SPrintln("\r\nSave program to cassette tape ..");
 
+    resetATtinyPLL();
+
+    displayMsg(0, "Recording..", 0);
+    
     if (progDetails.Lock) 
     {
         SPrintln("Error: Program is locked (RO)!");
-        displayMsgAndWait("** ReadOnly **", 2);
+        displayMsg(2, "** ReadOnly **", 2);
         return;
     }
     
@@ -36,6 +40,8 @@ void recordTape()
     //------------ wait for SYNC char's -------
     actByte = 0;
     SPrint("Wait for SYNC ..");
+    displayMsg(1, "Wait for SYNC ..", 0);
+
     getTimingDuration = millis();
     while ((actByte != 'S') && (millis() - getTimingDuration) < 10000)
     {
@@ -50,13 +56,18 @@ void recordTape()
     {
       Serial.swap();  // swap() back to normal
       SPrintln(".. time out; Abort");
+      displayMsg(2, "time out; Abort.", 2);
+      resetATtinyPLL();
       dataFile.close();
       return;
     }
     SPrintln(" .. received!");
-    
+    displayMsg(2, ".. received", 0);
+
     //------------ wait for Start (*)  char's -------
     SPrint("Wait for '*' ..");
+    displayMsg(1, "Wait for '*' ..   ", 0);
+    displayMsg(2, "                  ", 0);
     getTimingDuration = millis();
     while ((actByte != '*') && (millis() - getTimingDuration) < 6000)
     {
@@ -72,17 +83,18 @@ void recordTape()
     {
       Serial.swap();  // swap() back to normal
       SPrintln(".. time out; Abort");
+      displayMsg(2, "time out; Abort.", 2);
       dataFile.close();
-      //--- reset ATtinyPLL ---------
-      digitalWrite(_PLL_RESET, LOW);
-      delay(10);
-      digitalWrite(_PLL_RESET, HIGH);
+      resetATtinyPLL();
       return;
     }
     SPrintln(" .. received!");
+    displayMsg(2, ".. received!", 0);
     
     //------------ Now process data unit '/' -------
     SPrintln("Process program data ..");
+    displayMsg(2, "                  ", 0);
+    displayMsg(1, "Processing data ..", 0);
     getTimingDuration = millis();
     while ((actByte != '/') && (millis() - getTimingDuration) < 500)
     {
@@ -93,11 +105,10 @@ void recordTape()
         {
           Serial.swap();  // swap() back to normal
           SPrintln(".. ERROR!! $00F1 not '00'; Abort");
+          displayMsg(1, "Error!!! ..", 0);
+          displayMsg(2, "$00F1 not '00' ", 2);
           dataFile.close();
-          //--- reset ATtinyPLL ---------
-          digitalWrite(_PLL_RESET, LOW);
-          delay(10);
-          digitalWrite(_PLL_RESET, HIGH);
+          resetATtinyPLL();
           return;
         }
         dataFile.print((char)actByte);
@@ -109,14 +120,13 @@ void recordTape()
     {
       Serial.swap();  // swap() back to normal
       SPrintln(".. time out; Abort");
+      displayMsg(2, ".. time out; Abort", 2);
       dataFile.close();
-      //--- reset ATtinyPLL ---------
-      digitalWrite(_PLL_RESET, LOW);
-      delay(10);
-      digitalWrite(_PLL_RESET, HIGH);
+      resetATtinyPLL();
       return;
     }
     SPrintln(" .. '/' received!");
+    displayMsg(1, "'/' received!", 0);
     
     //------------ Now process data unit '/' -------
     SPrint("checksum and EOT ..");
@@ -132,13 +142,15 @@ void recordTape()
       }
     }
     SPrintln(" .. done!!");
+    displayMsg(2, ".. Done!", 1);
     
     // RxD will back to "normal"
     SPrintln("Swapping serial port to normal\r\n");
     Serial.swap();
     Serial.flush();
     dataFile.close();
-  
+    resetATtinyPLL();
+
     if (String(progDetails.Name) == "<EmptySlot>") 
     {
       snprintf(progDetails.Name, sizeof(progDetails.Name), "Program-%s", progDetails.ID);
