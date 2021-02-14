@@ -1,0 +1,9 @@
+asteroid
+by Stan Ockers
+
+You are piloting your spacecraft between mars and jupiter when you encounter a dense portion of the asteroid belt. Press key zero to move left, three to move right. When your craft is hit the display will give a number to indicate how sucessful you were. 
+
+The program starts at 0200.
+
+Changes -
+You can make your own asteroid field starting at 02D5. The group count,(C02B6), will have to be changed if the field size differs. The speed of the craft moving through the field is controlled by 027E. What about a varying speed, slow at first and speeding up as you get into the field? what about a final "destination count" and a signal to indicate you have reached your destination? How about allowing a hit or two before you are finally disabled?

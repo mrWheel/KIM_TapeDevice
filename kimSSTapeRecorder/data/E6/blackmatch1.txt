@@ -1,0 +1,16 @@
+black match
+by Ron Kushnier
+(modified by the editors) 
+
+NOTE: There are two versions of this program, appearing in different editions of The First Book of KIM. I [the editors??] included both here.)
+
+Description -
+There are 21 matches.  Each player must take 1,2, or
+3 matches per turn.  The player who winds up with the last
+match loses.  The player plays against the computer and goes
+first.  
+
+Starting address - 0200, press [GO]. 
+
+Player enters a number on the keyboard.  The left two digits display the players number.  The center digits display the computer's choice after some "think time".  The rightmost digits display a running total of matches left.  The computer has an i.q. and will become dumber if you lose, smarter if you win.
+

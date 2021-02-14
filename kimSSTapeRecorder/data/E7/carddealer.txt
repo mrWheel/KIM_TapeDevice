@@ -1,0 +1,8 @@
+card dealer
+By Dan Lewart
+
+Start the program at 0000
+
+Description -
+This program will deal a full deck of 52 cards.
+The value and suit of the cards appears in the right two digits of the display.  Press any key to get another card.  Each will appear only once.  When all cards have been dealt, the program must be restarted at 0000.

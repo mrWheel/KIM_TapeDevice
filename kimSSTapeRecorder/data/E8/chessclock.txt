@@ -1,0 +1,12 @@
+Chess Clock        
+by Cass Lewart
+
+The program starts at location 0200.  
+
+Two independent clocks are operated by the two players by depressing keys 1 or 2 respectively.  
+The right two digits show the move number, the left four digits show minutes and seconds.
+
+Maximum time is 99 minutes 59 sec.  
+
+The clock program can be finely tuned by changing the value of word 027F, increase by 1 slows the clock by approximately 6 sec/24 hours and vice versa.
+

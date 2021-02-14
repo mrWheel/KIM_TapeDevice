@@ -1,0 +1,41 @@
+SCRATCHBOOK
+
+This tape ID is kind of a "working area".
+
+You can save to and load programs from this area but you can't lock or rename it. It is also not possible to edit the decriprion.
+
+Startup KIM
+  <------ KeyPad ----------> | <---------- TTY ---------->
+  [RS]                       |  [RS] (on KeyPad!)        
+  [AD] 00F1 [DA] 00 [+]      |  <Enter> (on TTY)
+  [AD] 17F9 [DA] 00 [+]      |  00F1 <space> 00 . (punt)
+  [AD] 17FA [DA] 00 [+] 1C   |  17F9 <space> 00 .     
+  [AD] 17FC [DA] 00 [+] 1C   |  17FA <space> 00 . 1C .
+  [AD] 17FE [DA] 00 [+] 1C   |  17FC <space> 00 . 1C .
+                             |  17FE <space> 00 . 1C .
+    
+    
+LOAD program from tape:
+  <------ KeyPad ----------> | <---------- TTY ---------->
+  [AD] 1873 [GO]             | 1873 <space> G (capital g)
+    
+WRITE program to tape:
+  <------ KeyPad ----------------> | 
+  [AD] 17F5 [DA] <SAL> [+] <SAH>   |      
+  [AD] 17F7 [DA] <EAL> [+] <EAH>   |    
+  [AD] 17F9 [DA] <ProgID> ("00")   |      
+  [AD] 1800 [G]                    |     
+  
+                            <----------- TTY ----------->
+                          | 17F5 <space> <SAL> . <SAH> .  
+                          | 17F7 <space> <EAL> . <EAH> . 
+                          | 17F9 <space> <PrgID> . ("00")
+                          | 1800 <space> G (capital g)
+                          
+Example:
+        Program Start [$0150]
+        Program End   [$0230]
+        
+        SAL = 50, SAH = 01
+        EAL = 30, EAH = 02
+

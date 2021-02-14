@@ -1,0 +1,12 @@
+Hi-Lo
+by Jim Butterfield
+
+
+Description -
+
+An easy game for one or more players.  KIM chooses a secret number from 01 to 98.  At the start, the first four digits show the high and low bounds of the number - 99 high and 00 low.  As guesses are entered - enter the guess and press A for attempt - the bounds change as you are narrowing down the possibilities.  For example, guess 32 and the display might change to 32 00, meaning that the computer's secret number is between these values.  After each legal guess, the computer shows the number of attempts made so far.
+
+One player game: try to get the mystery number in six attempts.
+
+Multi player game: each player tries to avoid guessing the mystery number - the correct guesser loses and is "out".
+

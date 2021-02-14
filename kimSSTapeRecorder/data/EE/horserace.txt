@@ -1,0 +1,12 @@
+horserace
+by Chuck Eaton
+
+Description -
+This is an eight lap horse race and you can be the jockey and whip your horse to go faster.  Warning  ...whip the horse too much and he probably poops out.  
+
+The program starts at 0200.
+
+Horse                     Track      Whipping Button
+Prince Charming            top              PC
+Colorado Cowboy           middle            C
+Irish Rair                bottom            4

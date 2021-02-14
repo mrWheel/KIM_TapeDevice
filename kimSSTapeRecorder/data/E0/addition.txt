@@ -1,0 +1,8 @@
+addition
+
+by Jim Butterfield
+
+Directions -
+Here's a handy little adding machine program. KIM becomes a six digit adder. [GO] clears the total so you can start over. Then enter a number and hit the plus key to add it to the previous total. If you make a mistake in entering a number, just hit the "0" key several times and roll the bad number out before entering the correction. No overflow indicator, and no subtraction or multiplication - maybe you would like to try your hand at adding these. The program is fully relocatable.
+
+NOTE: Needs to be out of decimal mode to work (CLD or 00 in 00F1).

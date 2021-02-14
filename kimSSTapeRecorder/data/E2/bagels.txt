@@ -1,0 +1,15 @@
+bagels
+by Jim Butterfield
+
+Directions -
+The computer has chosen four letters, all of which are A,B,C,D,E, or F. letters may be repeated - for example, the computer's "secret" combination might be CACF or BBBB.  You get ten guesses. Each time you guess, the computer will tell you two things: how many letters are exactly correct (the right letter in the right place); and how many letters are correct, but in the wrong position.  For example, if the computer's secret combination is CBFB and you guess BAFD, the two numbers will be 1 and 1 (the F matches exactly; the B matches but in the wrong place).  These numbers will show on the right hand side of the display; the code you entered will appear on the left.  Make a note of your guesses and the computer's response.  With a little mental work, you should be able to break the code exactly in seven or eight words. A correct guess will produce a response of 4 - 0. if you don't guess right in ten moves, the computer will give you the answer.
+
+After a correct guess, or after the computer tells you the answer, it will start a new game (with a new secret code) the instant you touch a new key.
+
+program notes :
+1. Program enforces a pause of about 4 seconds after displaying counts or answer. This guards against display being 'missed' due to bounce, hasty keying.
+
+2. After count displayed, or at end of game(s), user can blank display, if desired, by pressing [GO] or any numeric key. Game operation is not affected, but user may feel it 'separates' games better.
+
+3. When a digit from the user's guess is matched, it is destroyed so that it will not be matched again.  There are two significantly different types of 'destruction', however (at 27D and 29D); the test at label step is sensitive to which one is used.
+

@@ -3,7 +3,7 @@
 **  Program  : ATtinyPLL2
 **  Copyright (c) 2017-2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 (03-02-2021)"
+#define _FW_VERSION "v2.0.0 (09-02-2021)"
 /* 
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -325,7 +325,7 @@ void setup()
     Serial.begin(19200);
     while(!Serial) { delay(100); }
 
-    for(int i=0; i<5; i++)
+    for(int i=0; i<6; i++)
     {
       delay(100);
       DPrintln("\r\n===== ATtinyPLL2 =====");
@@ -375,7 +375,9 @@ void loop()
       {
         if (tunePLL)
         {
+          digitalWrite(_PLL_LED, HIGH);
           tunePLLtiming();
+          digitalWrite(_PLL_LED, LOW);
         }
         if (++charCounter%2 == 0) SPrint("S");
         return; // skip the rest

@@ -1,0 +1,22 @@
+Craps
+by Jim Butterfield
+
+Description -
+  set address 0200, then hold [GO] down .. you'll see:
+    - 2 dice "rolling" on the left
+    - $10 balance on the right
+  let [GO] ... the dice will stop rolling, and you'll get:
+    - A win on a total of 7 or 11; you'll see your dollar
+      balance rise; or
+    - A loss on totals of 2,3, or 12; your dollar balance
+      will drop; or
+    - A "point" - the center segments will light with the
+      roll and you must try to roll this total again
+      before you roll 7 -
+  push the [GO] button only on the first roll. For subsequent
+    rolls, push another button.
+
+Coding notes: craps is a highly top-down program.
+The program always flows from start to light and back again with few breaks in sequence. The dice are randomized from timer (1704) and RNDLP contains a small division routine, dividing by 6; the remainder, randomly 0 to 5, gives the roll of one die. On the first roll of a run, we use the table at 02C8 to analyze the total: in this table, FF means you lose and 01 means you win.  Flag is zero if you're not pushing any button.  Segments for the display are stored in table window, 0046 to 004B.
+
+

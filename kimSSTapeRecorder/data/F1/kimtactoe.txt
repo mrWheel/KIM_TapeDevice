@@ -1,0 +1,14 @@
+Kim-Tac-Toe
+by Lew Edwards          
+
+Directions -
+Play begins with kim making the first play when [GO] is pressed.  The second through fourth digits of the display hold the pattern with squares numbered as:
+
+          7 8 9
+          4 5 6
+          1 2 3
+
+Your entry will be immediate but KIM's action will be delayed.  Your plays light steadily while KIM's flicker.  A winning row blinks and a draw blinks everything.  On completion of a game,  the [GO] key will start a new game.  If you prefer to play first, press the "+" key instead.  The kim has an i.q. level that can be changed by pressing [PC] at games end.  You will see "odds" and KIM's i.q. displayed.  The i.q. is initially set to 75%, (oc).  Change it to what you wish and then press [DA] to return to the done loop and start a new game in the normal manner.  The i.q. is adjusted upward each time the player wins and downward each time kim wins.
+
+The program starts at 0100.
+

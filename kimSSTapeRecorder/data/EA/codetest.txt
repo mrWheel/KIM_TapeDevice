@@ -1,0 +1,51 @@
+Code Test [KIM-1]
+by Stan Ockers
+
+
+  This program requires that a speaker be hooked
+  to PA0 as in figure 5.1 of the KIM manual.  When 
+  started at 0200, the program will send 5 letter 
+  code groups, (international morse), over the 
+  speaker.  The code groups will consist of random 
+  characters including A-Z, 0-9, a period, comma, 
+  question mark and equal sign.  After this 
+  transmission, your reception can be checked because 
+  the groups sent will be shown on the display.  
+  Pressing any key will cause the next group to be 
+  displayed.  Limitations imposed by the 7 segment 
+  displays make some characters pretty strange and 
+  there is some redundancy; but by slowing the 
+  transmission you should be able to figure out what
+  each character is.
+
+Changes-
+The program is initially set up to send and display 5 groups of 5 characters each.  They are sent at a rate of about 16 groups per minute.  All of this can of course be changed.
+
+- The number of characters to be sent (in hex) plus one
+  should be stored in 0233, (initially 1A).
+- The number of groups to be displayed after transmission
+  should be stored in 02E0  (initially 05).
+- The speed of transmission is determined by the contents
+  of 02E3.  a hex 33 gives about 16 groups/minute, a
+  66 gives 8 wpm.
+- The tone can be varied by the contents of 00E4.
+- A maximum of one page of characters can be sent
+  stored in a block pointed to by 02E1 and 02E2.
+- For a description of how the characters are stored,
+  see oct. '76 byte, page 36.
+- A portion of the character set, (say only letters),
+  can be selected by adjusting the byte at 0222.
+
+Corrections:
+
+code test, page 58:  addresses 02CE through 02DA should 
+be changed to:
+       D1 65 D4 65 D5 85 D0 A2 04 B5 D0 95 D1
+
+code test, page 58: zero page locations in random number 
+routine duplicate others, change E's to D's. send for 
+re-write (other errors)
+
+code test, p.58: change 02CE thru 02DA to:
+       D1 65 D4 65 D5 85 D0 A2 04 B5 D0 95 D1
+

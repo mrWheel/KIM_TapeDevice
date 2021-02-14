@@ -1,0 +1,6 @@
+duel
+by Stan Ockers
+
+Description -
+This is a  game for two players.  When the program is started at 0200, each player is given ten points as indicated on opposite sides of the display.  The center digits will be blank.  after a random delay, the center digits will light.
+The first player to press his key will increase his score by one and decrease his opponent's by one.  The center digits will then blank for another random delay.  If a player presses his key while the center digits are blank, his score will be decreased by one.  When one player reaches zero the game is over and must be restarted at 0200.  The player to the left uses key zero and the one on the right uses key seven.

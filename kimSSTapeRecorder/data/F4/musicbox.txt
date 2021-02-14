@@ -1,0 +1,42 @@
+Music Box
+Jim Butterfield
+
+
+Description
+
+This program plays one or several tunes via the "audio out" interface of kim-1; use the same connection as that for recording on cassette tape. If your tape recorder has a "monitor" feature, you can listen to the tune as well as record it. Alternatively, an amplifier will play the signal through a speaker.
+
+How to run
+Load the program; Load the tune(s) either from cassette tape, paper tape, or keyboard entry.  Be sure to store the value FA at the end of each tune, and behind the last tune, store: FF 00.
+
+Starting address for the program is 200; enter [AD] 0 2 0 0 [GO].
+
+How to write your own tune(s)
+
+Each note goes into a byte of storage, starting at location 0000 of memory. Each tune should end with the value FA which stops the program until [GO] is pressed.
+
+Special codes are incorporated in the program to allow certain effects - adjustment of speed, tone, etc.  The codes are followed by a value which sets the particular effect.  
+
+Codes are listed below:
+
+code         effect        initially examples
+ FB  sets speed of tune       $30    18 is quick; 60 is slow
+ FC  sets length of            02    2 means, "long note lasts
+     "long" notes                    twice as long as short"
+ FD  sets octave (pitch)       01    2 is bass; 4 is deep bass.
+ FE  sets instrument          $FF    FF is piano; 00 is clarinet
+ FF  sets address for          00    00 will take you back to
+     tune                            first tune; like a "jump"
+
+For example, at any time during a tune, you may insert the sequence FB 18 and the tune will then begin to play at fast speed. Inserting FF 45 will cause a switch to the tune at address 45.  The initial values shown can be reset at any time by starting at address 200.
+
+No tune should extend beyond address DF, since program values are stored at E0 and up.
+
+The program can be easily converted to a subroutine (by replacing the BRK instruction with a RTS).  This allows the programmer to play various "phrases" of music to produce quite complex tunes.
+
+
+Corrections:
+
+music box, page 90, missing lines 027D 84 E7   STY LIMIT 1
+music box, p.90: add              027D 84 E7 - STY LIMIT+1
+
