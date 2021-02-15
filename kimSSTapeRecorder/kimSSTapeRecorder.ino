@@ -3,7 +3,7 @@
  *  Program  : kimSSTapeRecorder
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (14-02-2021)"
+#define _FW_VERSION "v2.0.0 WS (15-02-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -87,7 +87,7 @@ char            fileID[5];
 char            idDir[6];
 char            filePath[33];
 char            newName[NAME_SIZE];
-char            cBuff[81], sBuff[30], scrollName[50];
+char            cBuff[90], sBuff[30], scrollName[50];
 char            lByte, hByte;
 int16_t         tmpB, idxName;
 uint32_t        scrollInterval;
@@ -799,20 +799,25 @@ void removeID(uint8_t fileNum)
 //------------------------------------------------------
 // list files in /ID map
 //------------------------------------------------------
-void listProgramFiles() 
+void listProgramFiles(const char *to) 
 {
     uint8_t fileCount = 0;
     uint8_t lenName;
     String  space = "                           ";
     uint8_t savFileID = actFileID;
     int     slotNr, IDnum;
+    char    komma = ' ';
                             
-    SPrintln("\r\nList files on Tape\r");
+    SPrintf("\r\nList files on Tape to [%s]\r\n", to);
     webSocket.broadcastTXT("blockButtons");
     displayMsg("Wait .. \nListing Files\nTakes some time"); 
+    
+    String jsonString  = "{";
+    jsonString += "\"msgType\":\"catalog\"";
+    jsonString += ", \"programs\":[";
 
     Dir dir;
-    for(slotNr=0; slotNr<=254; slotNr++)
+    for(slotNr=0; slotNr<=255; slotNr++)
     {
       if (!catalog[slotNr]) continue;
       IDnum = slotNr;
@@ -828,7 +833,10 @@ void listProgramFiles()
         {
           fileCount++;
           fileName2Name(IDnum, dir.fileName().c_str());
-          SPrintf("[%s] %s\r\n", progDetails.ID, progDetails.Name);
+          SPrintf("[%s] - [%s]\r\n", progDetails.ID, progDetails.Name);
+          snprintf(wsSend, sizeof(wsSend), "%c{\"ID\":\"%s\", \"name\":\"%s\"}%c\r\n", komma, progDetails.ID, progDetails.Name);
+          jsonString += String(wsSend);
+          komma = ',';
         }      
       } // while ..
     }
@@ -836,6 +844,14 @@ void listProgramFiles()
     actFileID = savFileID;
 
     webSocket.broadcastTXT("freeButtons");
+    jsonString += "]";
+    jsonString += "}";
+
+    if (strncmp(to, "ws", 2) == 0)
+    {
+      Debugln(jsonString);
+      webSocket.broadcastTXT(jsonString.c_str());
+    }
 
 }   // listProgramFiles()
 
@@ -856,7 +872,8 @@ void showDescription()
       while (D.available())
       {
         memset(cBuff, 0, sizeof(cBuff));
-        D.readBytesUntil('\n', cBuff, sizeof(cBuff));
+        int c = D.readBytesUntil('\n', cBuff, 62);
+        if (c >= 60) cBuff[62] = 0;
         SPrintln(cBuff);
       }
       D.close();
@@ -1215,7 +1232,7 @@ void loop()
                     printMenu();
                     break;
         case 'L':   webSocket.broadcastTXT("blockButtons");
-                    listProgramFiles();
+                    listProgramFiles("console");
                     readProgDetailsByID(actFileID);
                     printMenu();
                     break;

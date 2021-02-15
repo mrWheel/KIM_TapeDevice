@@ -67,16 +67,27 @@ button {
   flex-basis: 100%;
   flex: auto;
 }
-.navRight { 
+.navRightFS { 
   font-size: 1.8em;
-  position: right; 
-  right: 0;
+  position: fixed; /*position: right; */
+  right: 0%;
   height: 0;
 }
-.navRight:hover { 
+.navRightFS:hover { 
   font-size: 2.1em;
-  position: right; 
-  right: 0;
+  position: fixed; 
+  right: 0%;
+}
+.navRightCAT { 
+  font-size: 1.8em;
+  position: fixed; /* right; */
+  right: 10%;
+  height: 0;
+}
+.navRightCAT:hover { 
+  font-size: 2.1em;
+  position: fixed;  /* right; */
+  right: 10%;
 }
 
 .content {
@@ -115,7 +126,7 @@ button {
   display: flex;
   flex: 1 1 600px;
   justify-content: center;
-  align-items: center;   /* <---- NEW    */
+  align-items: center;   
 }
 .id-child {
     flex: 1 1 500px;
@@ -180,6 +191,54 @@ button {
   overflow-wrap: normal;
   overflow-x: scroll;
 }
+
+.catRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0px;
+  border: 1px solid gray;
+  background-color: #e1e1e1;
+  flex-direction: row;
+}
+.catRow:last-child {
+  margin-bottom: 0;
+}
+
+.catColFname  {
+  flex: 0 0 230px;
+  margin-left: 5px;
+  border-left: none;
+  margin-right: 5px;
+  border: 0;
+  text-decoration: none!important;
+}
+.catColID {
+  flex: 0 0 35px;
+  border: 0 0;
+  justify-content:center;
+}
+
+.catColButton {
+  flex: 0 0 5px;
+  margin-left: 0px;
+  justify-content:center;
+}
+
+.catLinkButton {
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
+    border: solid 1px #e1e1e1;
+    -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.2);
+    color: white; 
+    padding-left: 1px;
+    padding-right: 1px;
+    text-decoration: none;
+}
+
 
 .bottom { 
   position: fixed;

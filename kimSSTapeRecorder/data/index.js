@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : index.js, part of uTapeEmulator
-**  Version  : v2.0.0   (14-02-2021)
+**  Version  : v2.0.0   (15-02-2021)
 **
 **  Copyright (c) 2021 Willem Aandewiel
 **
@@ -17,6 +17,8 @@
   let buttonsActive = true;
   let cPensil     = "&#9998;";
   let cDiskette   = "&#128190;";
+  let cCatalog    = "&#128452;";    // &#x1F5C4;
+  let cReturn     = "&#9166;";      // &#x23CE;
   let cFRev       = "&#9194;";
   let cFFrwd      = "&#9193;";
   let cNextFree   = "&#9197;";
@@ -30,6 +32,7 @@
   let actDESC     = false;
   let actPTP      = false;
   let actASM      = false;
+  let readCatalog = false;
     
   
   window.onload=bootsTrapMain;
@@ -62,7 +65,14 @@
                                                   location.href = "/FSexplorer";
                                                 });
 
+    document.getElementById('M_Catalog').addEventListener('click',function() 
+                                                { 
+                                                  getCatalog();
+                                                });
+
     document.getElementById('buttonRec').style.backgroundColor = "#ff9999";
+    document.getElementById('program').style.display           = "block";
+    document.getElementById('catalog').style.display           = "none";
 
     needReload = false;
     /*
@@ -143,6 +153,7 @@
     } else if (validJson) 
     {
       jsonMessage = JSON.parse(payload);
+      console.log("jsonMessage ["+ JSON.stringify(jsonMessage)+"]");
       console.log("parsePayload(json): [" + jsonMessage.msgType + "]");
       if (jsonMessage.msgType == "devInfo")
       {
@@ -222,6 +233,52 @@
         document.getElementById('Description').innerHTML   = newText;
         document.getElementById('Description').value       = newText;
         
+      } else if (jsonMessage.msgType == "catalog")
+      {
+        //document.getElementById('listCatalog').innerHTML = "<main>";
+        for(let i=0; i< jsonMessage.programs.length; i++)
+        {
+          let ID = jsonMessage.programs[i].ID;
+          console.log("["+ID+"] "+jsonMessage.programs[i].name);
+          let IDexist = document.getElementById(ID);
+          if (IDexist)  continue;
+          
+          let newRow = document.createElement('div');
+          newRow.classList.add('catRow');
+
+          let catRowID = document.createElement('div');
+          catRowID.classList.add('catRow');
+          catRowID.classList.add('catColID');
+          text = document.createTextNode(ID);
+          catRowID.appendChild(text);
+
+          let catRowName = document.createElement('div');
+          catRowName.classList.add('catRow');
+          catRowName.classList.add('catColFname');
+          text = document.createTextNode(jsonMessage.programs[i].name);
+          catRowName.appendChild(text);
+
+          let catRowButton = document.createElement('button');
+          catRowButton.classList.add('catRow');
+          catRowButton.classList.add('catColButton');
+          catRowButton.classList.add('catLinkButton');
+          text = document.createTextNode("Select");
+          catRowButton.appendChild(text);
+          catRowButton.setAttribute("id", ID);
+
+          // add the newly created element's and its content into the DOM
+          newRow.append(catRowID);
+          newRow.append(catRowName);
+          newRow.append(catRowButton);
+          document.getElementById("listCatalog").appendChild(newRow);
+          
+          document.getElementById(ID).addEventListener('click',function() 
+                                                { 
+                                                  selectID(ID);
+                                                });
+
+        }      
+        //document.getElementById('listCatalog').innerHTML += "</main>";
       } else 
       {
         console.log("parsePayload(): Don't know: [" + payload + "]\r\n");
@@ -412,6 +469,42 @@
     else                 actASM = false;
     
   } // handleRadioChoice()
+  
+  
+  //============================================================================  
+  function getCatalog()
+  {
+    if (readCatalog)
+    {
+      readCatalog = false;
+      console.log("exitCatalog");
+      document.getElementById('program').style.display = "block";
+      document.getElementById('catalog').style.display = "none";
+      document.getElementById('M_Catalog').innerHTML   = cCatalog;
+    }
+    else
+    {
+      readCatalog = true;
+      console.log("send[getCatalog]");
+      document.getElementById('program').style.display = "none";
+      document.getElementById('catalog').style.display = "block";
+      document.getElementById('M_Catalog').innerHTML   = cReturn;
+
+      webSocketConn.send("getCatalog");
+    }
+
+  } // getCatalog(); 
+  
+  
+  //============================================================================  
+  function selectID(ID) 
+  {
+    console.log("SelectID ["+ID+"]");
+    webSocketConn.send("setID-"+ID);
+
+    getCatalog();
+    
+  } // selectID()
   
   
   //============================================================================  

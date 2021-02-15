@@ -128,10 +128,10 @@ bool handleList()
   temp += ",{\"usedBytes\":\"" + formatBytes(fs_info.usedBytes) +                      // Berechnet den verwendeten Speicherplatz
           "\",\"totalBytes\":\"" + formatBytes(fs_info.totalBytes) +                   // Zeigt die Größe des Speichers
           "\",\"freeBytes\":\"" + (fs_info.totalBytes - fs_info.usedBytes) + "\"}]";   // Berechnet den freien Speicherplatz
-  //SPrintln(temp);
   httpServer.send(200, "application/json", temp);
   return true;
-}
+  
+} //  handleList() 
 
 void deleteRecursive(const String &path) 
 {

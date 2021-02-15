@@ -171,6 +171,20 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
               DebugTln(text);
               sendExternalFile("asm");            
             }             
+            if (text.indexOf("getCatalog") > -1) 
+            {
+              DebugTln(text);
+              listProgramFiles("ws");
+            }             
+            if (text.indexOf("setID") > -1) 
+            {
+              DebugTln(text); // setID-XX
+              sprintf(progDetails.ID, "%s", text.substring(6).c_str());
+              actFileID = (int)strtol(progDetails.ID, NULL, 16);
+              Debugf("setID-[%s] -> actFileID[%d]\r\n", progDetails.ID, actFileID);
+              readProgDetailsByID(actFileID);
+              printMenu();
+            }             
             
             break;
                         

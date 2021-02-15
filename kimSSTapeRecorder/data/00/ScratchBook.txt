@@ -2,7 +2,7 @@ SCRATCHBOOK
 
 This tape ID is kind of a "working area".
 
-You can save to and load programs from this area but you can't lock or rename it. It is also not possible to edit the decriprion.
+You can save to and load programs from this area but you can't lock or rename it. It is also not possible to edit the description.
 
 Startup KIM
   <------ KeyPad ----------> | <---------- TTY ---------->
