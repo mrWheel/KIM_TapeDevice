@@ -10,7 +10,7 @@ For a small demo see:
 
 https://www.youtube.com/watch?v=R_zD5T_khKs
 
-This is an development version for the 2.0 release.
+This is a development version for the 2.0 release.
 Do not (yet) use this for production but feel free to try it out!
 
 
