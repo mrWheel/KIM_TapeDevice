@@ -1,0 +1,164 @@
+
+::selection {
+	background: #1FDA9A;
+	color: #fff;
+}
+.toolTip-wrapper {
+	padding: 160px 0;
+	text-align: center;
+}
+
+/**
+ * toolTips
+ */
+
+.toolTip {
+	position: relative;
+}
+.toolTip:after {
+	position: absolute;
+	padding: 8px;
+	border: 3px solid #fff;
+	border-radius: 8px;
+	background-color: #1FDA9A;
+	font-size: .5em;
+	font-weight: bold;
+	color: #fff;
+	content: attr(data-toolTip);
+	min-width: 80px;
+	// width: -moz-max-content;
+	// width: -webkit-max-content;
+	opacity: 0;
+	transition: opacity 0s linear 3s;
+	visibility: hidden;
+	z-index: 2;
+}
+.toolTip:hover:after {
+	opacity: 1;
+	visibility: visible;
+}
+
+/*Tooltip starting positions*/
+
+.toolTip-top:after {
+	bottom: 150%;
+	left: 0;
+}
+.toolTip-bottom:after {
+	top: 155%;
+	left: 0;
+}
+.toolTip-left:after {
+	right: 130%;
+	min-width: 100px;
+}
+.toolTip-right:after {
+	left: 130%;
+	min-width: 100px;
+}
+
+/*Tooltip final positions*/
+
+.toolTip-top:hover:after {
+	bottom: 120%;
+}
+.toolTip-bottom:hover:after {
+	top: 125%;
+}
+.toolTip-left:hover:after {
+	right: 110%;
+}
+.toolTip-right:hover:after {
+	left: 110%;
+}
+
+/**
+ * Triangles
+ */
+/*
+.toolTip-top:before,
+.toolTip-bottom:before,
+.toolTip-left:before,
+.toolTip-right:before {
+	content: "";
+	display: block;
+	position: absolute;
+	border-width: 7px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0);
+	opacity: 0;
+	transition: all .2s ease-in-out .25s;
+	visibility: hidden;
+}
+.toolTip-top:hover:before,
+.toolTip-bottom:hover:before,
+.toolTip-left:hover:before,
+.toolTip-right:hover:before {
+	opacity: 1;
+	visibility: visible;
+}
+*/
+/*Triangle starter positions*/
+/*
+.toolTip-top:before {
+	top: -51%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-top-color: #fff;
+}
+.toolTip-bottom:before {
+	bottom: -56%;
+	left: 50%;
+	transform: translateX(-50%);
+	border-bottom-color: #fff;
+}
+.toolTip-left:before {
+	left: -31%;
+	top: 15%;
+	border-left-color: #fff;
+}
+.toolTip-right:before {
+	right: -31%;
+	top: 15%;
+	border-right-color: #fff;
+}
+*/
+/* Triangle final positions */
+/*
+.toolTip-top:hover:before {
+	top: -21%;
+}
+.toolTip-bottom:hover:before {
+	bottom: -26%;
+}
+.toolTip-left:hover:before {
+	left: -11%;
+}
+.toolTip-right:hover:before {
+	right: -11%;
+}
+*/
+
+
+
+/* Section with links */
+/*
+.links {
+	text-align: center;
+	margin-top: 40px;
+}
+.links .link {
+	font-weight: 700;
+	font-size: 1.3em;
+	color: #fff;
+	display: inline-block;
+	margin: auto 5px;
+}
+.links .link:hover {
+	background: #1FDA9A;
+}
+.links .link:active {
+	background: #fff;
+	color: #1FDA9A;
+}
+*/

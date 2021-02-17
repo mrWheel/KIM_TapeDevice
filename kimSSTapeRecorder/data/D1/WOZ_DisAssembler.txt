@@ -1,0 +1,4 @@
+Disassembler was written by Steve Wozniak and Allen Baum and published in the September 1976 edition of Dr. Dobbs. This KIM-1 port is from Bob Kurtz (1979) in 6502 User Notes #14. In 505 bytes, Baum and Wozniak were able to write a full disassembler... seriously vintage bytes.
+
+Store the address from which you want to start disassembling in $00 (high byte, ie 02) and $01 (low byte, ie 00). Obviously, given that this outputs text, you will need to work from the serial terminal and be in serial mode. Then enter 2000<space>G . The first 13 lines of disassembly roll by. Hit G again to continue.
+

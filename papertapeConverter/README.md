@@ -1,4 +1,4 @@
-* ptp2hex
+# ptp2hex
 
 This program reads a (MOS) Papertape format file and generates a ".hex"
 file that can be used by the kimSolidStateTapeRecorder to send to the (micro) KIM.
@@ -14,7 +14,7 @@ Example:
   ;00
 </pre>
 
-''ptp2hex file.ptp''
+Enter command: ``ptp2hex file.ptp``
 
   The generated file.hex:
 <pre>
