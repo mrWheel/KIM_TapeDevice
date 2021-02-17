@@ -3,7 +3,7 @@
  *  Program  : kimSSTapeRecorder
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (15-02-2021)"
+#define _FW_VERSION "v2.0.0 WS (17-02-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -17,6 +17,7 @@
 #define DEBUG_ON
 #define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
 #define _REAL_KIM1      false   // is it a "real" KIM-1?
+#define _LOCK_FROM      0xE0    // from this slot on every slot is locked
 
 //---------- no need to change enything after this ------
 
@@ -392,8 +393,7 @@ void moveHexFilesFromRoot()
 void writeLockFile(uint16_t numID, bool newState)
 {
   DebugTf("change state [%s.lck] to [%s]\r\n", progDetails.Name, newState? "Lock":"R/W");
-  
-  if (numID == 0 || numID >= 0xE0) 
+  if (numID == 0 || numID >= _LOCK_FROM) 
   {
       SPrintln("\r\nError: cannot alter Lock of this program\r\n");
       return;
@@ -432,7 +432,7 @@ void writeExternalFile(uint8_t numID, const char ext[], String data)
 {
   DebugTf("write to [%s.txt]\r\n", progDetails.Name);
   
-  if (numID == 0 || numID >= 0xE0) 
+  if (numID == 0 || numID >= _LOCK_FROM) 
   {
       SPrintf("\r\nError: cannot alter %s of this program\r\n", ext);
       return;
@@ -519,7 +519,7 @@ bool readProgDetailsByID(uint8_t fileID)
 
         DebugTf("> [%d] [%s] [%s] [%s]\r\n", fileID, progDetails.Name, progDetails.Strt, progDetails.End);
 
-        if (progDetails.numID >= 0xE0) 
+        if (progDetails.numID >= _LOCK_FROM) 
         {
           progDetails.Lock = true;
         }
@@ -527,12 +527,15 @@ bool readProgDetailsByID(uint8_t fileID)
         {
           snprintf(filePath, sizeof(filePath), "/%s/%s.lck", progDetails.ID, cBuff);
           lckFile = LittleFS.open(filePath, "r");
-          if (lckFile || progDetails.numID >= 0xE0) 
+          if (lckFile || progDetails.numID >= _LOCK_FROM) 
           { 
             progDetails.Lock = true;
             lckFile.close();
           }
-          else  progDetails.Lock = false;
+          else 
+          {
+            progDetails.Lock = false;
+          }
         }
         return true;
       }
@@ -556,6 +559,8 @@ uint8_t findFirstEmptyID()
   SPrintln("\r\nFind First Empty ID on Tape\r");
   snprintf(scrollName, sizeof(scrollName), "%s", "        <<        <<");
   scrollProgressTape(true);
+
+  if (!actCatalog)  readCatalog();
 
   for(slotNr=0; slotNr<0xFF;slotNr++)
   {
@@ -695,7 +700,7 @@ void renameOneFile(char *ID, char *oldName, char *newName, const char ext[])
 //------------------------------------------------------
 void renameFilesByID(uint8_t fileNum, char *newName) 
 {
-  if (fileNum == 0 || fileNum >= 0xE0) 
+  if (fileNum == 0 || fileNum >= _LOCK_FROM) 
   {
     SPrintln("\r\nError: cannot alter name of this program\r\n");
     return;
@@ -765,7 +770,7 @@ void removeID(uint8_t fileNum)
 
   DebugTf("delete [%d]\r\n", fileNum);
 
-  if (fileNum == 0 || fileNum >= 0xE0) 
+  if (fileNum == 0 || fileNum >= _LOCK_FROM) 
   {
     SPrintln("\r\nError: cannot remove this program\r\n");
     return;
@@ -811,6 +816,8 @@ void listProgramFiles(const char *to)
     SPrintf("\r\nList files on Tape to [%s]\r\n", to);
     webSocket.broadcastTXT("blockButtons");
     displayMsg("Wait .. \nListing Files\nTakes some time"); 
+ 
+    if (!actCatalog)  readCatalog();
     
     String jsonString  = "{";
     jsonString += "\"msgType\":\"catalog\"";
@@ -841,7 +848,6 @@ void listProgramFiles(const char *to)
       } // while ..
     }
     SPrintf("\r\nThere are %d files on tape\n", fileCount);
-    actFileID = savFileID;
 
     webSocket.broadcastTXT("freeButtons");
     jsonString += "]";
@@ -852,6 +858,8 @@ void listProgramFiles(const char *to)
       Debugln(jsonString);
       webSocket.broadcastTXT(jsonString.c_str());
     }
+
+    actFileID = savFileID;
 
 }   // listProgramFiles()
 
@@ -893,7 +901,7 @@ void toggleLock(uint8_t fileNum) {
     
     readProgDetailsByID(fileNum);
 
-    if (fileNum == 0 || fileNum >= 0xE0) return;
+    if (fileNum == 0 || fileNum >= _LOCK_FROM) return;
 
     snprintf(filePath, sizeof(filePath), "/%s/%s.lck", progDetails.ID, progDetails.Name);
     if (progDetails.Lock) 
@@ -925,7 +933,7 @@ bool getNewProgName()
     return false;
   }
     
-  if (actFileID >= 0xE0) 
+  if (actFileID >= _LOCK_FROM) 
   {
     SPrintf("\r\nError: cannot alter Name of Program %02x \r\n", progDetails.ID);
     return false;

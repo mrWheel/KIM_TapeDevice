@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="toolTip.css">
     <script src="/index.js"></script>
     <title>SSTR</title>
   </head>
@@ -13,16 +14,18 @@
       <div class="header-nav" style="background-color: skyblue;">
     <!--    <div class="columns subhead" style="font-size:20pt"> Solid State Tape Recorder for the KIM family </div> -->
         <div class="columns" style="font-size: 26pt; font-variant: small-caps; color:gray;">
-             <h1>&nbsp;KIM <span class="big">Solid </span> 
-                           <span class="big">State </span> 
-                           <span class="big">Tape </span> 
-                           <span class="big">Recorder</span>&nbsp;</h1>
+             <h1 style="transform: skew(-15deg);">&nbsp;KIM 
+                           <span class="title big">Solid </span> 
+                           <span class="title big">State </span> 
+                           <span class="title big">Tape </span> 
+                           <span class="title big">Recorder</span>&nbsp;</h1>
         </div>
-        <div class='navRightCAT'>
-          <a id='M_Catalog'>&#128452;</a></span>
+        <div id='D_Catalog' class='navRightCAT toolTip toolTip-left' 
+          data-toolTip="show Catalog">
+          <span id='M_Catalog'>&#128452;</span>
         </div>
         <div class='navRightFS'>
-          <a id='M_FSexplorer'>&#128194; &nbsp;</a></span>
+          <span id='M_FSexplorer'>&#128194; &nbsp;</span>
         </div>
       </div>  <!-- header-nav -->
       <br/>
@@ -46,7 +49,10 @@
                 <input id="switchLock" type="checkbox" onclick="handleButton('setLock')" checked>
                 <div class="slider round"></div>
               </label> &nbsp;
-              <button id="buttonLockEdit"  class="col.Button button" onclick="handleButton('lockEdit')">&#9998;</button>
+              <button id="buttonLockEdit"  class="col.Button button toolTip toolTip-bottom"
+                data-toolTip="change Lock/Unlock State"
+                onclick="handleButton('lockEdit')">&#9998;
+              </button>
             </span>
             <br>
             <span id="Strt">[$Start] </span>
@@ -62,10 +68,13 @@
       <div class="box flex">
         <div class="name">
           <div class="name-child">
-            <input id="Name" type="text"  maxlength="24" value="invullen">
+            <input id="Name" type="text"  maxlength="24" value="program Name">
           </div>
           <div class="name-child">
-            <button id="buttonNameEdit"  class="col.Button button" onclick="handleButton('nameEdit')">&#128190;</button>
+            <button id="buttonNameEdit"  class="col.Button button toolTip toolTip-left" 
+              data-toolTip="Change Program Name (DEL to delete)"
+              onclick="handleButton('nameEdit')">&#128190;
+            </button>
           </div>
         </div>
       </div>
@@ -76,15 +85,31 @@
     <section class="content">
       <div class="box flex">
         <div class="name">
-          <button id="buttonFRev"  class="col.Button button" onclick="handleButton('FREV')">&#9194;</button>
+          <button id="buttonFRev"  class="col.Button button toolTip toolTip-left" 
+             data-toolTip="Previous Slot"
+             onclick="handleButton('FREV')">&#9194;
+          </button>
           &nbsp; &nbsp;
-          <button id="buttonRec"   class="col.Button button" onclick="handleButton('REC')">&#9210;</button>
+          <button id="buttonRec"   class="col.Button button toolTip toolTip-top" 
+            data-toolTip="RECORD program"
+            onclick="handleButton('REC')">&#9210;
+          </button>
           &nbsp; &nbsp;
-          <button id="buttonPlay"  class="col.Button button" onclick="handleButton('PLAY')">&#9199;</button>
+          <button id="buttonPlay"  class="col.Button button toolTip toolTip-bottom" 
+            data-toolTip="PLAY program"
+            onclick="handleButton('PLAY')">
+            <span class="rotate90">&#128316;</span>
+          </button>
           &nbsp; &nbsp;
-          <button id="buttonEmpty" class="col.Button button" onclick="handleButton('EMPTY')">&#9197;</button>
+          <button id="buttonEmpty" class="col.Button button toolTip toolTip-bottom" 
+            data-toolTip="Find First Free Slot"
+            onclick="handleButton('EMPTY')">&#9197;
+          </button>
           &nbsp; &nbsp;
-          <button id="buttonFFrwd" class="col.Button button" onclick="handleButton('FFWRD')">&#9193;</button>
+          <button id="buttonFFrwd" class="col.Button button toolTip toolTip-right"
+            data-toolTip="Next Slot"
+            onclick="handleButton('FFWRD')">&#9193;
+          </button>
         </div>
       </div>
     </section>
@@ -110,7 +135,10 @@
             </span>
           </div>
           <div class="name-child">
-            <button id="buttonDescEdit" class="col.Button button" onclick="handleButton('descEdit')">&#128190;</button>
+            <button id="buttonDescEdit" class="col.Button button toolTip toolTip-left" 
+              data-toolTip="Edit Description"
+              onclick="handleButton('descEdit')">&#128190;
+           </button>
           </div>
         </div>
       </div>

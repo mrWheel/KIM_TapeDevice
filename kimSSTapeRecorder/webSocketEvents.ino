@@ -110,11 +110,11 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
               writeExternalFile(actFileID, "txt", String(text).substring(8).c_str());
               printMenu();
             }
-            if (text.startsWith("newMOS")) 
+            if (text.startsWith("newPTP")) 
             {
               snprintf(newName, sizeof(newName), "%s", String(text).substring(7).c_str());
               DebugTf("received newDESC\r\n%s\r\n", String(text).substring(7).c_str());
-              //--- only send text from pos 7 to the end (skip "newMOS:") --
+              //--- only send text from pos 7 to the end (skip "newPTP:") --
               writeExternalFile(actFileID, "ptp", String(text).substring(7).c_str());
               printMenu();
             }
@@ -174,9 +174,19 @@ void webSocketEvent(uint8_t num, WStype_t type, uint8_t * payload, size_t lenght
             if (text.indexOf("getCatalog") > -1) 
             {
               DebugTln(text);
+              int savFileID = actFileID;
               listProgramFiles("ws");
+              actFileID = savFileID;
+              readProgDetailsByID(actFileID);
+              printMenu();
             }             
-            if (text.indexOf("setID") > -1) 
+            if (text.indexOf("setID-actFileID") > -1) 
+            {
+              DebugTln(text); // setID-XX
+              readProgDetailsByID(actFileID);
+              printMenu();
+            }             
+            else if (text.indexOf("setID") > -1) 
             {
               DebugTln(text); // setID-XX
               sprintf(progDetails.ID, "%s", text.substring(6).c_str());

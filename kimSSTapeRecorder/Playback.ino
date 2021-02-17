@@ -7,13 +7,13 @@
 ***************************************************************************  
 */
 
-#define _SHORT   300      //300     // Standaard is 2484 max is 8000
+#define _SHORT   200      // 300 is more-or-less standaard (minimal 190?)
 #define _LONG    (_SHORT * 2)
 
 
 //----------------------------------------------------------
 //-- converts an ascii character into a byte value
-//-- so ascii--decimal--binary --->  byte--decimal--binary
+//--    ascii--decimal--binary --->  byte--decimal--binary
 //--     "0"     48    0110000 --->           0      0000
 //--     "6"     54    0110110 --->           6      0110 
 //--     "B"     66    1000010 --->          11      1011

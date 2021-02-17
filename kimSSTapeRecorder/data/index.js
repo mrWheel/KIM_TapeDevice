@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : index.js, part of uTapeEmulator
-**  Version  : v2.0.0   (15-02-2021)
+**  Version  : v2.0.0   (16-02-2021)
 **
 **  Copyright (c) 2021 Willem Aandewiel
 **
@@ -23,7 +23,7 @@
   let cFFrwd      = "&#9193;";
   let cNextFree   = "&#9197;";
   let cRecord     = "&#9210;";
-  let cPlay       = "&#9199;";
+  let cPlay       = "&#128316;";
   let nameEdit    = false;
   let descEdit    = false;
   let lockEdit    = false;
@@ -178,15 +178,34 @@
           gLock = false;
           console.log("(1) gLock to false");
         }  
-        if (gID >= 124) gLock = true;
+        //if (gID >= 124) gLock = true;
         console.log("(2) gLock["+gLock+"]");
         document.getElementById('switchLock').checked       = !gLock;
         document.getElementById('End').innerHTML            = "&nbsp; End [$"+jsonMessage.End+"] ";
         document.getElementById('Name').innerHTML           = "&nbsp; &nbsp; "+jsonMessage.Name;
         document.getElementById('Name').value               = jsonMessage.Name;
         document.getElementById('Name').readOnly            = true;
+
         document.getElementById('buttonNameEdit').innerHTML = cPensil;
+        document.getElementById('buttonNameEdit').setAttribute('data-toolTip', "change Program Name (DEL is delete)");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("change Program Name (DEL is delete)");
+        newSpan.appendChild(text);
+        document.getElementById("buttonNameEdit").appendChild(newSpan);
+        **/
+
         document.getElementById('buttonDescEdit').innerHTML = cPensil;
+        document.getElementById('buttonDescEdit').setAttribute('data-toolTip', "change Program Description");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("change Program Description");
+        newSpan.appendChild(text);
+        document.getElementById("buttonDescEdit").appendChild(newSpan);
+        **/
+
         document.getElementById('ID').style.display         = "block";
         document.getElementById('IDwait').style.display     = "none";
         document.getElementById("showDESC").checked         = true;  
@@ -209,7 +228,7 @@
        
       } else if (   (jsonMessage.msgType == "progDESC") )
       {
-        console.log("parsed .. payload is ["+ JSON.stringify(jsonMessage).substring(0, 20)+"]");
+        console.log("parsed .. DESC payload is ["+ JSON.stringify(jsonMessage).substring(0, 20)+"]");
         //console.log("Discription Text ["+ jsonMessage.Text+"]");
         let newText = jsonMessage.Text.replaceAll("@n$", "\n");
         newText = newText.replaceAll("@1$", ":");
@@ -218,12 +237,13 @@
         setWrapOn();
         document.getElementById('Description').innerHTML   = newText;
         document.getElementById('Description').value       = newText;
+        actDESC = true;
+        actASM  = false;
+        actPTP  = false;
         
-      } else if (   (jsonMessage.msgType == "progPTP")                   
-                 || (jsonMessage.msgType == "progASM")                   
-                )
+      } else if (jsonMessage.msgType == "progASM")                   
       {
-        console.log("parsed .. payload is ["+ JSON.stringify(jsonMessage).substring(0, 20)+"]");
+        console.log("parsed .. ASM payload is ["+ JSON.stringify(jsonMessage).substring(0, 20)+"]");
         //console.log("Discription Text ["+ jsonMessage.Text+"]");
         let newText = jsonMessage.Text.replaceAll("@n$", "\n");
         newText = newText.replaceAll("@1$", ":");
@@ -232,6 +252,24 @@
         setWrapOff();
         document.getElementById('Description').innerHTML   = newText;
         document.getElementById('Description').value       = newText;
+        actDESC = false;
+        actASM  = true;
+        actPTP  = false;
+        
+      } else if (jsonMessage.msgType == "progPTP")                   
+      {
+        console.log("parsed .. PTP payload is ["+ JSON.stringify(jsonMessage).substring(0, 20)+"]");
+        //console.log("Discription Text ["+ jsonMessage.Text+"]");
+        let newText = jsonMessage.Text.replaceAll("@n$", "\n");
+        newText = newText.replaceAll("@1$", ":");
+        console.log("Discription Text ["+ newText.substring(0,20)+"]");
+
+        setWrapOff();
+        document.getElementById('Description').innerHTML   = newText;
+        document.getElementById('Description').value       = newText;
+        actDESC = false;
+        actASM  = false;
+        actPTP  = true;
         
       } else if (jsonMessage.msgType == "catalog")
       {
@@ -277,8 +315,8 @@
                                                   selectID(ID);
                                                 });
 
-        }      
-        //document.getElementById('listCatalog').innerHTML += "</main>";
+        }     
+         
       } else 
       {
         console.log("parsePayload(): Don't know: [" + payload + "]\r\n");
@@ -309,12 +347,28 @@
         console.log("newLock:" + gLock);
         webSocketConn.send("newLock:" + gLock);
         document.getElementById('buttonLockEdit').innerHTML = cPensil; 
+        document.getElementById('buttonLockEdit').setAttribute('data-toolTip', "change Lock/Unlock State");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("change Lock/Unlock State");
+        newSpan.appendChild(text);
+        document.getElementById("buttonLockEdit").appendChild(newSpan);
+        **/
         lockEdit = false;
       }
       else 
       {
         document.getElementById('switchLock').checked = !gLock;
         document.getElementById('buttonLockEdit').innerHTML = cDiskette;  
+        document.getElementById('buttonLockEdit').setAttribute('data-toolTip', "save State");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("save State");
+        newSpan.appendChild(text);
+        document.getElementById("buttonLockEdit").appendChild(newSpan);
+        **/
         lockEdit = true;
       }
     } // lockEdit
@@ -326,6 +380,14 @@
       document.getElementById('ID').style.display = "none";
       document.getElementById('IDwait').style.display = "block";
       document.getElementById('buttonLockEdit').innerHTML = cPensil; 
+      document.getElementById('buttonLockEdit').setAttribute('data-toolTip', "save State");
+      /**
+      newSpan = document.createElement('span');
+      newSpan.classList.add('showToolTip');
+      text = document.createTextNode("change Lock/Unlock State");
+      newSpan.appendChild(text);
+      document.getElementById("buttonLockEdit").appendChild(newSpan);
+      **/
       document.getElementById('switchLock').checked = !gLock;
       lockEdit = false;
       document.getElementById('showDESC').checked = true;
@@ -368,13 +430,22 @@
     } else if (buttonPressed == 'nameEdit') 
     {
       console.log("buttonPressed(nameEdit)");
-      if (gID == 0 || gID >= 224 || gLock || lockEdit) return;
+      //if (gID == 0 || gID >= 224 || gLock || lockEdit) return;
+      if (gID == 0 || gLock || lockEdit) return;
       if (nameEdit)
       {
         console.log("newName:" + document.getElementById('Name').value);
         webSocketConn.send("newName:" + document.getElementById('Name').value);
         //--- set to readonly ----
         document.getElementById('buttonNameEdit').innerHTML = cPensil; 
+        document.getElementById('buttonNameEdit').setAttribute('data-toolTip', "change Program Name (DEL is delete)");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("change Program Name (DEL is delete)");
+        newSpan.appendChild(text);
+        document.getElementById("buttonNameEdit").appendChild(newSpan);
+        **/
         document.getElementById('Name').readOnly = true;
         nameEdit = false;
       }
@@ -382,6 +453,14 @@
       {
         //--- open for edit ----
         document.getElementById('buttonNameEdit').innerHTML = cDiskette;  
+        document.getElementById('buttonNameEdit').setAttribute('data-toolTip', "save Program Name");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("save Program Name");
+        newSpan.appendChild(text);
+        document.getElementById("buttonNameEdit").appendChild(newSpan);
+        **/
         document.getElementById('Name').readOnly = false;
         nameEdit = true;
 
@@ -390,12 +469,13 @@
     } else if (buttonPressed == 'descEdit') 
     {
       console.log("buttonPressed(descEdit)");
-      if (gID == 0 || gID >= 224 || gLock || lockEdit) return;
+      //if (gID == 0 || gID >= 224 || gLock || lockEdit) return;
+      if (gID == 0 || gLock || lockEdit) return;
       if (descEdit)
       {
         if (actDESC)
         {
-          console.log("Ok, new description to save!");
+          console.log("Ok, new Description to save!");
           webSocketConn.send("newDESC:" + document.getElementById('Description').value);
         }
         else if (actPTP)
@@ -410,6 +490,7 @@
         }
         //--- set to readonly ----
         document.getElementById('buttonDescEdit').innerHTML = cPensil; 
+        document.getElementById('buttonDescEdit').setAttribute('data-toolTip', "change Program Description");
         document.getElementById('Description').readOnly = true;
         document.getElementById('Description').style.backgroundColor = "lightblue";
         descEdit = false;
@@ -418,6 +499,14 @@
       {
         //--- open for edit ----
         document.getElementById('buttonDescEdit').innerHTML = cDiskette;  
+        document.getElementById('buttonDescEdit').setAttribute('data-toolTip', "save Description");
+        /**
+        newSpan = document.createElement('span');
+        newSpan.classList.add('showToolTip');
+        text = document.createTextNode("save Description");
+        newSpan.appendChild(text);
+        document.getElementById("buttonDescEdit").appendChild(newSpan);
+        **/
         document.getElementById('Description').readOnly = false;
         document.getElementById('Description').style.backgroundColor = "lightgray";
         descEdit = true;
@@ -441,6 +530,14 @@
       console.log("==>gLock["+gLock+"]");
       //--- set to readonly ----
       document.getElementById('buttonDescEdit').innerHTML = cPensil; 
+      document.getElementById('buttonDescEdit').setAttribute("data-toolTip", "change Program Description");
+      /*
+      newSpan = document.createElement('span');
+      newSpan.classList.add('showToolTip');
+      text = document.createTextNode("change Program Description");
+      newSpan.appendChild(text);
+      document.getElementById("buttonDescEdit").appendChild(newSpan);
+      **/
       document.getElementById('Description').readOnly = true;
       nameEdit = false;
       descEdit = false;
@@ -466,7 +563,7 @@
     if (show[1].checked) actPTP  = true
     else                 actPTP  = false;
     if (show[2].checked) actASM  = true
-    else                 actASM = false;
+    else                 actASM  = false;
     
   } // handleRadioChoice()
   
@@ -481,6 +578,9 @@
       document.getElementById('program').style.display = "block";
       document.getElementById('catalog').style.display = "none";
       document.getElementById('M_Catalog').innerHTML   = cCatalog;
+      document.getElementById('D_Catalog').setAttribute('data-toolTip', "show Catalog");
+      webSocketConn.send("setID-actFileID");
+
     }
     else
     {
@@ -489,6 +589,8 @@
       document.getElementById('program').style.display = "none";
       document.getElementById('catalog').style.display = "block";
       document.getElementById('M_Catalog').innerHTML   = cReturn;
+      document.getElementById('D_Catalog').setAttribute('data-toolTip', "return to Main Screen");
+      //document.getElementById("S_Catalog").innerHTML = "return to Main Screen";
 
       webSocketConn.send("getCatalog");
     }

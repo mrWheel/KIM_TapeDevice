@@ -17,14 +17,14 @@ R"(
     <meta name="viewport" content="width=device-width, initial-scale=1">  
     <link rel="stylesheet" type="text/css" href="/index.css">
     <script src="/index.js"></script>
-    <title>uTape Emulatort</title>
+    <title>Solid State Tape Recorder</title>
   </head>
   <body>
     <font face="Arial">
     <!-- <div class="dev-header"> -->
     <div class="header">
       <h1>
-        <span id="sysName">uTape Emulator</span> &nbsp; &nbsp; &nbsp;
+        <span id="sysName">Solid State Tape Recorder</span> &nbsp; &nbsp; &nbsp;
         <span id="devName"    style='font-size: small;'>-</span> &nbsp;
         <span id="devVersion" style='font-size: small;'>[version]</span>
       </h1>

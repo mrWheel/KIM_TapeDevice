@@ -30,11 +30,11 @@ h1 {
 .big {
   display: inline-block;
 }
-
-span::first-letter {
+.title::first-letter {
   font-size: 200%;
   color: red;
 }
+
 input[type='text'] {
   font-size: 30px; 
   font-family: monospace; 
@@ -239,6 +239,10 @@ button {
     text-decoration: none;
 }
 
+.rotate90 {
+  display: inline-block; 
+  transform: rotate(90deg);
+}
 
 .bottom { 
   position: fixed;
