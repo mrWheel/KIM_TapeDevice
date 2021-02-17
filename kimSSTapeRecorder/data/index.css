@@ -161,7 +161,7 @@ button {
   order: 2;
   height: 50px;
   justify-content: center;
-  align-items: center;   /* <---- NEW    */
+  align-items: center;  
 }
 .name-child {
     flex: 1 1 100px;
@@ -271,7 +271,8 @@ button {
    text-align: right;
 }
 
-/**** slider stuff ****/
+
+/*------ START SLIDER CSS ---------*/
 /* https://stackoverflow.com/questions/39846282/how-to-add-the-text-on-and-off-to-toggle-button */
 
 .switch {
@@ -308,8 +309,6 @@ button {
   transition: .4s;
   border-radius: 50%;
 }
-
-/*------ START SLIDER CSS ---------*/
 .slider:after
 {
  content:'RO';

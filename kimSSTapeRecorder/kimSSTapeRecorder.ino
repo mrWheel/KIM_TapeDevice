@@ -221,7 +221,7 @@ bool buttonChanged()
 //--    decimal value of Slot ("84")
 //-- sets 
 //--    progDetails.ID to "54" (= hex value of 84)
-//--    progDetails.Name to "filename" (without the extention)
+//--    progDetails.Name to "filename" (without the extension)
 //------------------------------------------------------
 void fileName2Name(uint8_t id, const char *fName) 
 {

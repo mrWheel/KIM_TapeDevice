@@ -14,7 +14,7 @@ with the dedicated ADW1710 board.
 
 ![SSTR_side](https://user-images.githubusercontent.com/5585427/108220493-11c20500-7137-11eb-8c04-dfd69849fa95.png)
 
-You can combine the ADW1710 board with the ADW2101 32kb memory extention board.
+You can combine the ADW1710 board with the ADW2101 32kb memory extension board.
 
 ![microKIM_Memory_SSTR_top](https://user-images.githubusercontent.com/5585427/108220562-269e9880-7137-11eb-8477-18aeae8c8424.png)
 
