@@ -3,7 +3,7 @@
 **  Program  : ptp2hex
 **  Copyright (c) 2021 Willem Aandewiel
 **
-**  TERMS OF USE: MIT License (see End of this file
+**  TERMS OF USE: MIT License (see End of this file)
 **
 **  This program converts a PaperTape format file to a
 **  program file (.hex) that can be used by the kimSolidStateTapeRecorder
@@ -147,7 +147,7 @@ void processFile(char *inName, char *outName)
       nextAddr = startAddr;
     }
 
-    int eol = strlen(lineIn) -5;
+    int eol = strlen(lineIn) -5;  //-- we are not interested in the last 4 chars + newline
     //-- if lineIn length > 7 (";NNHHLL" = 7 positions)
     if (eol>7)
     {
@@ -163,8 +163,9 @@ void processFile(char *inName, char *outName)
             fputs("\n", fOut);
           }
           printf("00 ");
-          //-- add zero's (could also use EA [NOP])
-          fputs("00", fOut);
+          //-- add NOP
+          fputs("EA", fOut);
+          tmpSum += hex2int('E', 'A');
           byteCount++;
         }
       }
@@ -203,7 +204,8 @@ void processFile(char *inName, char *outName)
   //-- this is not really necessary but it costs nothing extra
   for (int i=0; i<5;i++)
   {
-    fputs("00", fOut);
+    tmpSum += hex2int('E', 'A');
+    fputs("EA", fOut);
   }
   printf("\r\nEOF\r\n");
   //-- write '/' (EOF marker) on a new line

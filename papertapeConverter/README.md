@@ -1,7 +1,7 @@
 # ptp2hex
 
 This program reads a (MOS) Papertape format file and generates a ".hex"
-file that can be used by the kimSolidStateTapeRecorder to send to the (micro) KIM.
+file that can be used by the kimSSTapeRecorder to send to the (micro) KIM.
 
 Example:
   PaperTape file:
