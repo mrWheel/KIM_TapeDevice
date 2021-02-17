@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : index.js, part of uTapeEmulator
-**  Version  : v2.0.0   (16-02-2021)
+**  Version  : v2.0.0   (17-02-2021)
 **
 **  Copyright (c) 2021 Willem Aandewiel
 **
@@ -188,23 +188,9 @@
 
         document.getElementById('buttonNameEdit').innerHTML = cPensil;
         document.getElementById('buttonNameEdit').setAttribute('data-toolTip', "change Program Name (DEL is delete)");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("change Program Name (DEL is delete)");
-        newSpan.appendChild(text);
-        document.getElementById("buttonNameEdit").appendChild(newSpan);
-        **/
 
         document.getElementById('buttonDescEdit').innerHTML = cPensil;
         document.getElementById('buttonDescEdit').setAttribute('data-toolTip', "change Program Description");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("change Program Description");
-        newSpan.appendChild(text);
-        document.getElementById("buttonDescEdit").appendChild(newSpan);
-        **/
 
         document.getElementById('ID').style.display         = "block";
         document.getElementById('IDwait').style.display     = "none";
@@ -217,7 +203,7 @@
         setWrapOn();
         document.getElementById('Description').value        = "";
         document.getElementById('Description').innerHTML    = "";
-        //document.getElementById('statusMsg').innerHTML      = "";
+
         webSocketConn.send("getDESC");
         
       } else if (   (jsonMessage.msgType == "statusMsg") )
@@ -348,13 +334,6 @@
         webSocketConn.send("newLock:" + gLock);
         document.getElementById('buttonLockEdit').innerHTML = cPensil; 
         document.getElementById('buttonLockEdit').setAttribute('data-toolTip', "change Lock/Unlock State");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("change Lock/Unlock State");
-        newSpan.appendChild(text);
-        document.getElementById("buttonLockEdit").appendChild(newSpan);
-        **/
         lockEdit = false;
       }
       else 
@@ -362,13 +341,6 @@
         document.getElementById('switchLock').checked = !gLock;
         document.getElementById('buttonLockEdit').innerHTML = cDiskette;  
         document.getElementById('buttonLockEdit').setAttribute('data-toolTip', "save State");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("save State");
-        newSpan.appendChild(text);
-        document.getElementById("buttonLockEdit").appendChild(newSpan);
-        **/
         lockEdit = true;
       }
     } // lockEdit
@@ -381,13 +353,6 @@
       document.getElementById('IDwait').style.display = "block";
       document.getElementById('buttonLockEdit').innerHTML = cPensil; 
       document.getElementById('buttonLockEdit').setAttribute('data-toolTip', "save State");
-      /**
-      newSpan = document.createElement('span');
-      newSpan.classList.add('showToolTip');
-      text = document.createTextNode("change Lock/Unlock State");
-      newSpan.appendChild(text);
-      document.getElementById("buttonLockEdit").appendChild(newSpan);
-      **/
       document.getElementById('switchLock').checked = !gLock;
       lockEdit = false;
       document.getElementById('showDESC').checked = true;
@@ -439,13 +404,6 @@
         //--- set to readonly ----
         document.getElementById('buttonNameEdit').innerHTML = cPensil; 
         document.getElementById('buttonNameEdit').setAttribute('data-toolTip', "change Program Name (DEL is delete)");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("change Program Name (DEL is delete)");
-        newSpan.appendChild(text);
-        document.getElementById("buttonNameEdit").appendChild(newSpan);
-        **/
         document.getElementById('Name').readOnly = true;
         nameEdit = false;
       }
@@ -454,13 +412,6 @@
         //--- open for edit ----
         document.getElementById('buttonNameEdit').innerHTML = cDiskette;  
         document.getElementById('buttonNameEdit').setAttribute('data-toolTip', "save Program Name");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("save Program Name");
-        newSpan.appendChild(text);
-        document.getElementById("buttonNameEdit").appendChild(newSpan);
-        **/
         document.getElementById('Name').readOnly = false;
         nameEdit = true;
 
@@ -500,13 +451,6 @@
         //--- open for edit ----
         document.getElementById('buttonDescEdit').innerHTML = cDiskette;  
         document.getElementById('buttonDescEdit').setAttribute('data-toolTip', "save Description");
-        /**
-        newSpan = document.createElement('span');
-        newSpan.classList.add('showToolTip');
-        text = document.createTextNode("save Description");
-        newSpan.appendChild(text);
-        document.getElementById("buttonDescEdit").appendChild(newSpan);
-        **/
         document.getElementById('Description').readOnly = false;
         document.getElementById('Description').style.backgroundColor = "lightgray";
         descEdit = true;
@@ -531,13 +475,6 @@
       //--- set to readonly ----
       document.getElementById('buttonDescEdit').innerHTML = cPensil; 
       document.getElementById('buttonDescEdit').setAttribute("data-toolTip", "change Program Description");
-      /*
-      newSpan = document.createElement('span');
-      newSpan.classList.add('showToolTip');
-      text = document.createTextNode("change Program Description");
-      newSpan.appendChild(text);
-      document.getElementById("buttonDescEdit").appendChild(newSpan);
-      **/
       document.getElementById('Description').readOnly = true;
       nameEdit = false;
       descEdit = false;

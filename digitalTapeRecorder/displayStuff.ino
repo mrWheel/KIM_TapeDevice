@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
- *  Part of : uTapeEmulator
+ *  Part of : digitalTapeRecorder
  *  Copyright (c) 2021 Willem Aandewiel
  *
  *  TERMS OF USE: MIT License. See bottom of file.  
@@ -45,11 +45,11 @@ void turnOnOledDisplay()
 
     display.setTextAlignment(TEXT_ALIGN_LEFT);
     display.setFont(ArialMT_Plain_10);      // _24
-    display.drawString(0, 0, "micro KIM");
+    display.drawString(0, 0, "KIM-1");
     display.setTextAlignment(TEXT_ALIGN_CENTER);
     display.setFont(ArialMT_Plain_16);
-    display.drawString(64, 12, "Solid State");
-    display.drawString(64, 31, "Tape Device");
+    display.drawString(64, 12, "digital");
+    display.drawString(64, 31, "Tape Recorder");
     display.setTextAlignment(TEXT_ALIGN_LEFT);
     display.setFont(ArialMT_Plain_10);      // _16/_24
     display.drawString(0, 52, "(c) Willem Aandewiel");

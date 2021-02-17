@@ -1,9 +1,9 @@
 /*
 ***************************************************************************  
-**  Program  : ATtinyPLL2
+**  Program  : ATtinyPLL2   (for the digitalTapeRecorder)
 **  Copyright (c) 2017-2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 (16-02-2021)"
+#define _FW_VERSION "v2.0.0 (18-02-2021)"
 /* 
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -20,11 +20,11 @@
 ** 
 ***************************************************************************
 ** 
-** Micro-KIM Tape Device, ATTiny841 / ESP8266
+** KIM-1 and microKIM digital Tape Recorder, ATTiny841 / ESP8266
 **
 ** The original KIM-1 uses a PLL and a comparator to implement the receive
 ** path of the cassette interface. These two parts have been replaced by
-** this implementation which runs on a ATTiny85 microcontroller.
+** this implementation which runs on a ATTiny841 microcontroller.
 **
 ** The KIM-1 cassette format encodes each bit using two tones:
 **  1) A high-frequency tone of 3623.188 Hz 

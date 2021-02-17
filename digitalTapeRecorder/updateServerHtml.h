@@ -5,7 +5,7 @@ static const char UpdateServerIndex[] PROGMEM =
         body {background-color: lightblue;}
      </style>
      <body>
-     <h1>Solid State Tape Recorder Flash utility</h1>
+     <h1>digital Tape Recorder Flash utility</h1>
      <form method='POST' action='?cmd=0' enctype='multipart/form-data'>
           Selecteer een "<b>.ino.bin</b>" bestand<br/>
           <input type='file' accept='ino.bin' name='firmware'>
@@ -46,7 +46,7 @@ static const char UpdateServerSuccess[] PROGMEM =
         body {background-color: lightgray;}
      </style>
      <body>
-     <h1>uTapeEmulator Flash utility</h1>
+     <h1>digital Tape Recorder Flash utility</h1>
      <br/>
      <h2>Update successful!</h2>
      <br/>

@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : kimSSTapeRecorder v2.0 / Record
+**  Program  : digitalTapeRecorder v2.0 / Record
 **  Copyright (c) 2021 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License.                                                            
