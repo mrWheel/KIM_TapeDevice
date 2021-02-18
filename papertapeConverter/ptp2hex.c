@@ -6,7 +6,7 @@
 **  TERMS OF USE: MIT License (see End of this file)
 **
 **  This program converts a PaperTape format file to a
-**  program file (.hex) that can be used by the kimSolidStateTapeRecorder
+**  program file (.hex) that can be used by the digitalTapeRecorder
 **
 **  Usage:
 **          ptp2hex fileName.ptp

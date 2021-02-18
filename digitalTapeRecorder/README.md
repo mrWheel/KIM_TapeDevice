@@ -1,6 +1,6 @@
-# kimSSTapeRecorder
+# digitalTapeRecorder
 
-This map contains all the files for the kimSSTapeRecorder.
+This map contains all the files for the digitalTapeRecorder.
 
 In the main program you will find the setting for the Arduino IDE. 
 

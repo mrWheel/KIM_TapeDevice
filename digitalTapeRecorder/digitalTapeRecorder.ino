@@ -1,13 +1,13 @@
 /*
 ***************************************************************************  
- *  Program  : kimSSTapeRecorder
+ *  Program  : digitalTapeRecorder (for the KIM-1 and microKIM)
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (17-02-2021)"
+#define _FW_VERSION "v2.0.0 WS (18-02-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
- * Board:         "Generic ESP8266 Module"
+ * Board:         "Generic ESP8266 Module"  // always! even if you have a Wemos or NodeMCU!
  * Builtin Led:   "2"
  * CPU Frequency: "80 MHz" or "160 MHz"
  * Flash Size:    "4MB (FS:3MB OTA:~512KB)"
@@ -17,11 +17,11 @@
 #define DEBUG_ON
 #define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
 #define _REAL_KIM1      false   // is it a "real" KIM-1?
-#define _LOCK_FROM      0xE0    // from this slot on every slot is locked
+#define _LOCK_FROM      0xDD    // from this slot on every slot is locked
 
 //---------- no need to change enything after this ------
 
-#define _HOSTNAME   "kimSSTR"
+#define _HOSTNAME   "kimDTR"
 
 #include <TelnetStream.h>
 #include "Debug.h"
@@ -847,7 +847,7 @@ void listProgramFiles(const char *to)
         }      
       } // while ..
     }
-    SPrintf("\r\nThere are %d files on tape\n", fileCount);
+    SPrintf("\r\nThere are %d files on Tape\n", fileCount);
 
     webSocket.broadcastTXT("freeButtons");
     jsonString += "]";
@@ -871,6 +871,7 @@ void listProgramFiles(const char *to)
 void showDescription() 
 {
     SPrintf("\r\nshow Description for %s\r\n", progDetails.Name);
+    SPrintln("--------------------------------------------------------------------------\r");
     snprintf(cBuff, sizeof(cBuff), "/%s/%s.txt", progDetails.ID, progDetails.Name);
     DebugTf("try to open [%s] ..", cBuff);
     File D = LittleFS.open(cBuff, "r");
@@ -885,6 +886,7 @@ void showDescription()
         SPrintln(cBuff);
       }
       D.close();
+      SPrintln("--------------------------------------------------------------------------\r");
     }
     else
     {
@@ -1062,8 +1064,8 @@ void printMenu()
   SPrintln("--------------------------------------------------\r");
   SPrintln("   P    - Play from Tape (uKIM enter [$1873 G])\r");
   SPrintln("   R    - Record to Tape (uKIM enter [$1800 G])\r");
-  SPrintln("   +    - FastForw. to next file on tape\r");
-  SPrintln("   -    - FastRev. to previous file on tape\r");
+  SPrintln("   +    - FastForw. to next file on Tape\r");
+  SPrintln("   -    - FastRev. to previous file on Tape\r");
   SPrintf( "   C    - Change Name for Program [%s] (\"DEL\" to delete)\r\n", progDetails.ID);
   SPrintf( "   D    - Show Description of Program [%s]\r\n", progDetails.Name);
   SPrintln("   F    - Find first Free Slot\r");
@@ -1071,7 +1073,7 @@ void printMenu()
   if (doVerbose) SPrintln("ON)\r");
   else           SPrintln("OFF)\r");
   SPrintf( "   T    - Toggle Lock for Program [%s]\r\n", progDetails.ID);
-  SPrintln("   L    - List files on tape\r");
+  SPrintln("   L    - List files on Tape\r");
   SPrintln("   H    - This menu\r");
   SPrintln("\r"); 
   SPrint(" (P/R/L/D/T/H) ? ");
@@ -1089,7 +1091,7 @@ void setup()
   Serial.begin(19200);
   while(!Serial) { delay(10); }
   Serial.println();
-  Serial.println("\r\n[kimSSTapeRecorder (v2.0)]");
+  Serial.println("\r\n[digitalTapeRecorder (v2.0)]");
   Serial.flush();
   pinMode(_LED_PIN,       OUTPUT);
   digitalWrite(_LED_PIN,  HIGH);

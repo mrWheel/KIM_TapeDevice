@@ -43,11 +43,12 @@ void displayMsg(String);
   #include "updateServerHtml.h"
 #endif
 #include <WiFiManager.h>       // version 0.15.0 - https://github.com/tzapu/WiFiManager
+
 // included in main program: #include <TelnetStream.h>       // Version 0.0.1 - https://github.com/jandrassy/TelnetStream
+
 #include <WebSocketsServer.h> // https://github.com/Links2004/arduinoWebSockets
 
 WebSocketsServer webSocket = WebSocketsServer(81);
-
 
 ESP8266WebServer        httpServer (80);
 #ifdef USE_UPDATE_SERVER

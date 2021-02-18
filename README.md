@@ -1,6 +1,6 @@
-# KIM Solid State Tape Recorder
+# digital Tape Recorder
 
-A solid state tape recorder for the (micro)KIM-1
+A Solid State Digital Tape Recorder for the KIM-1 and microKIM
 
 More info:
 
@@ -14,7 +14,8 @@ This is a development version for the 2.0 release.
 Do not (yet) use this for production but feel free to try it out!
 
 
-![SSTR_GUI_D5](https://user-images.githubusercontent.com/5585427/108216974-564ba180-7133-11eb-9052-3066bd3f9474.png)
+![dTR_GUI_D5](https://user-images.githubusercontent.com/5585427/108364677-a2abe580-71f6-11eb-9b1f-6f984f839e7b.png)
+
 
 ![SSTR_FSexplorer](https://user-images.githubusercontent.com/5585427/108217058-73807000-7133-11eb-94bc-dc09b9f65778.png)
 

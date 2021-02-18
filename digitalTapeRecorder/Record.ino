@@ -1,6 +1,6 @@
 /*
 ***************************************************************************  
-**  Program  : kimSSTapeRecorder v2.0 / Record
+**  Program  : digitalTapeRecorder v2.0 / Record
 **  Copyright (c) 2021 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License.                                                            
@@ -20,8 +20,8 @@ void recordTape()
 {
     char tempFile[] = "/tmp/KIM.hex";
     
-    SPrintln("\r\nSave program to tape ..");
-    //sendStatusMessage("Write program to tape ..");
+    SPrintln("\r\nSave program to Tape ..");
+    //sendStatusMessage("Write program to Tape ..");
 
     resetATtinyPLL();
 
