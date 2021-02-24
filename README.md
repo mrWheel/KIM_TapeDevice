@@ -4,7 +4,7 @@ A Solid State Digital Tape Recorder for the KIM-1 and microKIM
 
 More info:
 
-https://willem.aandewiel.nl/index.php/kim_tapedevice/
+https://willem.aandewiel.nl/index.php/2021/02/20/digital-tape-recorder-for-the-kim-1-and-clones/
 
 For a small demo see:
 
