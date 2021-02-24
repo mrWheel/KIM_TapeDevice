@@ -3,15 +3,16 @@
 **  Program  : ATtinyPLL2   (for the digitalTapeRecorder)
 **  Copyright (c) 2017-2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 (18-02-2021)"
+#define _FW_VERSION "v2.0.0 (23-02-2021)"
 /* 
 **  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
 **  Arduino IDE settings:  
 * * ---------------------
-**    Chip: "ATtyni841"
+**    Chip: "ATtiny841 (Optiboot)"
 **    Clock: "8MHz (internal, Vcc > 4.5V)"
 **    B.O.D. Mode (active): "B.O.D. Disabled (saves power)"
+**    B.O.D. Mode (sleep): "B.O.D. Disabled (saves power)"
 **    Pin Mapping: "Clockwise (like Rev. D/E boards)"
 **    LTO (1.6.11+ only): "Enabled"
 **    Bootloader UART: "UART0 (Serial)"

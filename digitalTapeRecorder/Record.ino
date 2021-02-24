@@ -23,8 +23,6 @@ void recordTape()
     SPrintln("\r\nSave program to Tape ..");
     //sendStatusMessage("Write program to Tape ..");
 
-    resetATtinyPLL();
-
     displayMsg(0, "Recording..", 0);
     
     if (progDetails.Lock) 
@@ -164,7 +162,6 @@ void recordTape()
     Serial.swap();
     Serial.flush();
     dataFile.close();
-    resetATtinyPLL();
 
     if (String(progDetails.Name) == "<EmptySlot>") 
     {

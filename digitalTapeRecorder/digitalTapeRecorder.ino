@@ -3,7 +3,7 @@
  *  Program  : digitalTapeRecorder (for the KIM-1 and microKIM)
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (18-02-2021)"
+#define _FW_VERSION "v2.0.0 WS (24-02-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -16,7 +16,7 @@
 #define USE_UPDATE_SERVER
 #define DEBUG_ON
 #define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
-#define _REAL_KIM1      false   // is it a "real" KIM-1?
+#define _REAL_KIM1      false   // is it a "real" KIM-1 (invert bits out)?
 #define _LOCK_FROM      0xDD    // from this slot on every slot is locked
 
 //---------- no need to change enything after this ------
@@ -34,12 +34,12 @@
 #define _SET(a,b)           ((a) |= _BV(b))
 #define _CLEAR(a,b)         ((a) &= ~_BV(b))
 
-#define _LED_PIN        LED_BUILTIN
+#define _LED_PIN        LED_BUILTIN // dont use this pin!
 
 #define _SDA            4       // D2   - GPIO04
 #define _SCL            5       // D1   - GPIO05
 
-#define _PLL_RESET      2       // D4   - GPIO02
+#define _PLL_RESET      2       // D4   - GPIO02  // OEPS!! Also the Builtin LED
 #define _PLL_IN_PIN     13      // D7   - GPIO13  
 #define _TAPE_OUT_PIN   12      // D6   - GPIO12  
 
@@ -566,7 +566,7 @@ uint8_t findFirstEmptyID()
   {
     yield();
     scrollProgressTape(true);
-    Debugf("test catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
+    DebugTf("test catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
     if (!catalog[slotNr]) break;
     
   } // for ..
@@ -601,7 +601,7 @@ uint8_t findFirstEmptyID()
 //------------------------------------------------------
 uint8_t findNextID(uint8_t actID) 
 {
-  int slotNr;
+  int slotNr, firstEmptyID = 0;
   
   snprintf(scrollName, sizeof(scrollName), "%s", ">>        >>        ");
   scrollName[sizeof(scrollName)] = 0;
@@ -610,6 +610,20 @@ uint8_t findNextID(uint8_t actID)
   if (!actCatalog)  readCatalog();
   
   savFileID = actID;
+
+  //-- find FirstEmptyID ----
+  for(firstEmptyID=0; firstEmptyID<0xFF;firstEmptyID++)
+  {
+    yield();
+    scrollProgressTape(true);
+    DebugTf("find firstEmptyID in catalog[%d] => [%s]\r\n"
+                                            , firstEmptyID
+                                            , catalog[firstEmptyID] ? "true":"false");
+    //-- found the First Empty ID???
+    if (!catalog[firstEmptyID]) break;  // YES!
+
+  } // for ..
+
   if (actID < 0xFF) 
         actID++;
   else  actID = 0xFF;
@@ -618,11 +632,16 @@ uint8_t findNextID(uint8_t actID)
   {
     yield();
     scrollProgressTape(true);
-    Debugf("test catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
-    if (catalog[slotNr]) break;
+    //DebugTf("find nextNr in catalog[%d] => [%s]\r\n", slotNr, catalog[slotNr] ? "true":"false");
+    if (catalog[slotNr]) break; // found the nextID
     
   } // for ..
-  
+
+  if ( (firstEmptyID > savFileID) && (firstEmptyID < slotNr) )
+  {
+    DebugTf("First emptyID between [%d] and [%d]\r\n", savFileID, slotNr);
+    slotNr = findFirstEmptyID();   // a bit clumsy. Sorry
+  }
   if (slotNr > 0xFF)
         return savFileID;
   else  return slotNr;
@@ -1093,9 +1112,7 @@ void setup()
   Serial.println();
   Serial.println("\r\n[digitalTapeRecorder (v2.0)]");
   Serial.flush();
-  pinMode(_LED_PIN,       OUTPUT);
-  digitalWrite(_LED_PIN,  HIGH);
-  pinMode(_PLL_RESET,     OUTPUT);
+  pinMode(_PLL_RESET,     OUTPUT);  // this is also the BuiltIn LED pin
   pinMode(_TAPE_OUT_PIN,  INPUT_PULLUP); // set to OUTPUT only when sending to KIM
   pinMode(_PLAY_BUTTON,   INPUT);
   pinMode(_FFWD_BUTTON,   INPUT);
@@ -1152,7 +1169,6 @@ void setup()
 
   printMenu();
 
-  resetATtinyPLL();
   resetATtinyPLL();
 
 }   // setup()
