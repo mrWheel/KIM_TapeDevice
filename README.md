@@ -20,9 +20,10 @@ For first time use see [here](docs/firstTimeUse.md).
 
 [Here](docs/flashFirmware.md) you can read how to flash the firmware to the digital Tape Recorder.
 
-* The [schematic](docs/ADW1710\ Schematic.pdf).
-* The [BOM](docs/ADW1710\ BOM.pdf).
-* How to connect the digital Tape Recorder to a [genuine KIM-1](docs/sTR_KIM-1_A.pdf)
+* The [schematic](docs/ADW1710_Schematic.pdf).
+* The [BOM](docs/ADW1710_BOM.pdf).
+* Modification to the digital Tape Recorder for use with a [genuine KIM-1](docs/dTR_KIM-1_mod.pdf)
+* How to connect the digital Tape Recorder to a [genuine KIM-1](docs/dTR_KIM-1_A.pdf)
 
 ![SSTR_FSexplorer](https://user-images.githubusercontent.com/5585427/108217058-73807000-7133-11eb-94bc-dc09b9f65778.png)
 
