@@ -3,7 +3,7 @@
  *  Program  : digitalTapeRecorder (for the KIM-1 and microKIM)
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.0 WS (24-02-2021)"
+#define _FW_VERSION "v2.0.1 WS (30-07-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -349,8 +349,7 @@ void moveHexFilesFromRoot()
       actFileID = findFirstEmptyID();
       DebugTf("create idDir for [%s] ..\r\n", dir.fileName().c_str());
       sprintf(idDir, "/%02x", actFileID);
-      toupper(idDir[0]);
-      toupper(idDir[1]);
+      arrayToUpper(idDir, strlen(idDir));
       displayMsgAndWait(String(idDir), 1) ;
       DebugTf("idDir -> [%s]\r\n", idDir);
       snprintf(baseName, sizeof(baseName), "%s", dir.fileName().c_str());
