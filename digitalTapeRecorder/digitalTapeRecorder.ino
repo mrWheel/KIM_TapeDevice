@@ -3,7 +3,7 @@
  *  Program  : digitalTapeRecorder (for the KIM-1 and microKIM)
  *  Copyright (c) 2021 Willem Aandewiel
  */
-#define _FW_VERSION "v2.0.1 WS (30-07-2021)"
+#define _FW_VERSION "v2.0.2 WS (05-08-2021)"
 /* 
 *  TERMS OF USE: MIT License. See bottom of file.                                                            
 ***************************************************************************  
@@ -17,7 +17,7 @@
 #define DEBUG_ON
 #define _HAS_BUTTONS    true    // false=no buttons, true=yes we have buttons
 #define _REAL_KIM1      false   // is it a "real" KIM-1 (invert bits out)?
-#define _LOCK_FROM      0xDD    // from this slot on every slot is locked
+#define _LOCK_FROM      0xD0    // from this slot on every slot is locked
 
 //---------- no need to change enything after this ------
 
@@ -578,6 +578,7 @@ uint8_t findFirstEmptyID()
   
   snprintf(progDetails.Name, sizeof(progDetails.Name), "<EmptySlot>");
   snprintf(progDetails.ID, sizeof(progDetails.ID), "%02x", slotNr);
+  arrayToUpper(progDetails.ID, strlen(progDetails.ID)); //-- Bug-05-08-2021
   progDetails.numID = slotNr;
   progDetails.Lock  = false;
   progDetails.Size  = 0;

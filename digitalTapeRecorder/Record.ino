@@ -168,6 +168,7 @@ void recordTape()
       snprintf(progDetails.Name, sizeof(progDetails.Name), "Program-%s", progDetails.ID);
     }
     snprintf(idDir, sizeof(idDir), "%s", progDetails.ID);
+    arrayToUpper(idDir, strlen(idDir)); //-- Bug-05-08-2021
     sprintf(filePath, "/%s/%s.hex", progDetails.ID, progDetails.Name);
 
     SPrintf("\r\nremove [%s]\r\n", filePath);

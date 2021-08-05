@@ -1,0 +1,4 @@
+Acey Ducey
+This program implements the popular card game Acey-Ducey. The object of this game is to place bets on the relative probability of the occurence of a particular card. The computer deals you your first two cards and you place a bet on the third card being between the first two. The low card is 2 while ace (a) is the high card. The third card must not be equal to either of the first two cards or you lose. When you accumulate $2000 you win or when you lose all your money you lose. Dollar amounts are entered for the bets and must be less than or equal to the money you presently have. Bets are terminated with a carriage return. Only the last 4 digits typed remain as the bet. (leading zeros not required). Before running Acey-Ducey you must be certain that rnsm anb rnsm+1 are not both zero. If so, set one or both to some zero value. The starting address of this program is 0200.
+
+
