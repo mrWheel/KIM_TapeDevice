@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : ATtinyPLL2   (for the digitalTapeRecorder)
-**  Copyright (c) 2017-2021 Willem Aandewiel
+**  Copyright (c) 2017 - 2022 Willem Aandewiel
  */
 #define _FW_VERSION "v2.0.0 (23-02-2021)"
 /* 

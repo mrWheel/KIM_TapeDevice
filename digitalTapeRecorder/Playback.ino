@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
 **  Program  : digitalTapeRecorder v2.0 / Playback
-**  Copyright (c) 2021 Willem Aandewiel
+**  Copyright (c) 2021 - 2022 Willem Aandewiel
 **
 **  TERMS OF USE: MIT License.                                                            
 ***************************************************************************  

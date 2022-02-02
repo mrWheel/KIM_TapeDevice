@@ -1,11 +1,18 @@
-Testing RAM isn't just a question of storing a value and then checking it.  It'S a important to test for interference between locations.  Such tests often involve writing to one location and then checking all other locations to see they haven't been disturbed; this can be time consuming.
+Testing RAM isn't just a question of storing a value and then 
+checking it. It's a important to test for interference between 
+locations. Such tests often involve writing to one location and 
+then checking all other locations to see they haven't been 
+disturbed; this can be time consuming.
 
-This program checks memory thoroughly and runs exceptionally fast.  It is adapted from an algorithm by Knaizuk and Hartmann published in 'IFEE. Transactions on Computers', April 1977.
+This program checks memory thoroughly and runs exceptionally fast.  
+It is adapted from an algorithm by Knaizuk and Hartmann published 
+in 'IFEE. Transactions on Computers', April 1977.
 
 The program first puts value FF in every location under test.
 Then it puts 00 in every third location, after which it tests
-all locations for correctness.  The test is repeated twice more with the positions of the 00's changed each time.  Finally, the whole thing is repeated with the FF and 00 values 
-interchanged.
+all locations for correctness.  The test is repeated twice more 
+with the positions of the 00's changed each time.  Finally, the 
+whole thing is repeated with the FF and 00 values interchanged.
 
 To run:  Set the addresses of the first and last memory pages
 you wish to test into locations 0000 and 0001 respectively.

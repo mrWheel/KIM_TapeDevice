@@ -1,7 +1,7 @@
 /*
 ***************************************************************************  
  *  Program  : digitalTapeRecorder (for the KIM-1 and microKIM)
- *  Copyright (c) 2021 Willem Aandewiel
+ *  Copyright (c) 2021 - 2022 Willem Aandewiel
  */
 #define _FW_VERSION "v2.0.2 WS (05-08-2021)"
 /* 
