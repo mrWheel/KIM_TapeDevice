@@ -255,18 +255,37 @@ void processFile(char *inName, char *outName)
   printf("checkSum is [%04x] => [%02x][%02x]\r\n", tmpSum, checkSumL, checkSumH);
 
   //-- write a final newLine
-  fputs("\n", fOut);
+  fputs(FILE_EOL, fOut);
 
   fclose(fOut);
   fclose(fIn);
 
 } // processFile()
 
+// 
+//-- Strip an extension from a file name.
+//-- Lifted from 
+//-- https://stackoverflow.com/questions/43163677/how-do-i-strip-a-file-extension-from-a-string-in-c
+
+void strip_ext(char *fname)
+{
+    char *end = fname + strlen(fname);
+
+    while (end > fname && *end != '.' && *end != '\\' && *end != '/') {
+        --end;
+    }
+    if ((end > fname && *end == '.') &&
+        (*(end - 1) != '\\' && *(end - 1) != '/')) {
+        *end = '\0';
+    }  
+}
+
 
 //----------------------------------------------------------
 int main(int argc, char* argv[])
 {
   int arg;
+  char *ext = ".hex";
 
   if (argv[1] == NULL)
   {
@@ -280,9 +299,19 @@ int main(int argc, char* argv[])
     printf("\r\nUse: ptp2hex <filein>.ptp\r\n");
     return 2;
   }
+
   snprintf(hexName, sizeof(hexName), "%s", ptpName);
-  hexName[strlen(ptpName)-4] = 0;
-  snprintf(hexName, sizeof(hexName), "%s.hex", hexName);
+
+  strip_ext(hexName);
+  // Shorten the base file name to make room for the extension if needed.
+  // No, the loop isn't really effencient but this covers a rare edge case and
+  // makes the math easier.
+  while (strlen(hexName) + strlen(ext) >= sizeof(hexName) +1 )
+  {
+    hexName[strlen(hexName) -1] = 0;
+  }
+  strcat(hexName, ext);
+  
   printf("hexName is [%s]\r\n", hexName);
 
   processFile(ptpName, hexName);
