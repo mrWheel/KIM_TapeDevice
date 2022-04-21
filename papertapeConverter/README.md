@@ -29,3 +29,8 @@ Enter command: ``ptp2hex program1.ptp``
 
 The program is only tested on MacOS (Big-Sur)
 
+EDIT:
+    This program has been modified to run under Linux
+    (gcc (Ubuntu 11.2.0-7ubuntu2) 11.2.0)
+    The code should be more portable in general.
+    
