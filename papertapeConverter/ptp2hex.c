@@ -18,11 +18,20 @@
 **          cc ptp2hex.c -o ptp2hex
 ***************************************************************************
 */
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <libc.h>
+// #include <libc.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
+// 32 Matches the value of the MOS_TECH_BASIC_V1.1HEX I am debugging against.
+// 48 matches the original behavior.
+const int BYTES_PER_LINE = 32;
+
+const char *FILE_EOL = "\r\n";
+
 
 FILE *fIn;
 FILE *fOut;
@@ -39,6 +48,22 @@ int  checkSum     = 0;
 int  startAddr    = 0;
 int  nextAddr     = 0;
 int  bytesInLine  = 0;
+
+//--------------------------------------------
+//-- Remove LF and/or CR characters from the end of the string.
+//--------------------------------------------
+void strip_eol(char* s)
+{
+    /* Loop while the string ends with a CR or LF character. */
+    while (strlen(s) > 0 &&
+            (s[strlen(s) - 1] == '\n' ||
+             s[strlen(s) - 1] == '\r'))
+    {
+        /* Erase the last character. */
+        s[strlen(s) - 1] = '\0';
+    }
+}
+
 
 //--------------------------------------------
 //-- converts two bytes into an integer
@@ -123,6 +148,8 @@ void processFile(char *inName, char *outName)
   //-- CL = checksum Low Byte
   while(fgets(lineIn, sizeof(lineIn), fIn))
   {
+    strip_eol(lineIn);
+
     lineCount++;
     //-- read HH and LL
     startAddr = hex4int(lineIn[3], lineIn[4], lineIn[5], lineIn[6]);
@@ -147,7 +174,7 @@ void processFile(char *inName, char *outName)
       nextAddr = startAddr;
     }
 
-    int eol = strlen(lineIn) -5;  //-- we are not interested in the last 4 chars + newline
+    int eol = strlen(lineIn) -4;  //-- we are not interested in the last 4 chars
     //-- if lineIn length > 7 (";NNHHLL" = 7 positions)
     if (eol>7)
     {
@@ -157,10 +184,10 @@ void processFile(char *inName, char *outName)
         for (int f=nextAddr; f<startAddr; f++)
         {
           byteCount++;
-          if (byteCount%48==0)
+          if (byteCount % BYTES_PER_LINE ==0)
           {
             printf("\n");
-            fputs("\n", fOut);
+            fputs(FILE_EOL, fOut);
           }
           printf("00 ");
           //-- add NOP
@@ -189,10 +216,10 @@ void processFile(char *inName, char *outName)
           fputs(bytes, fOut);
         }
         //-- time to write a newline (only for estetic reasons)?
-        if (byteCount%48==0)
+        if (byteCount % BYTES_PER_LINE == 0)
         {
           printf("\n");
-          fputs("\n", fOut);
+          fputs(FILE_EOL, fOut);
         }
       }
     }
@@ -209,7 +236,8 @@ void processFile(char *inName, char *outName)
   }
   printf("\r\nEOF\r\n");
   //-- write '/' (EOF marker) on a new line
-  fputs("\n/", fOut);
+  fputs(FILE_EOL, fOut);
+  fputs("/", fOut);
 
   //-- calculate checkSum (High and Low)
   int checkSumH, checkSumL;
@@ -227,18 +255,37 @@ void processFile(char *inName, char *outName)
   printf("checkSum is [%04x] => [%02x][%02x]\r\n", tmpSum, checkSumL, checkSumH);
 
   //-- write a final newLine
-  fputs("\n", fOut);
+  fputs(FILE_EOL, fOut);
 
   fclose(fOut);
   fclose(fIn);
 
 } // processFile()
 
+// 
+//-- Strip an extension from a file name.
+//-- Lifted from 
+//-- https://stackoverflow.com/questions/43163677/how-do-i-strip-a-file-extension-from-a-string-in-c
+
+void strip_ext(char *fname)
+{
+    char *end = fname + strlen(fname);
+
+    while (end > fname && *end != '.' && *end != '\\' && *end != '/') {
+        --end;
+    }
+    if ((end > fname && *end == '.') &&
+        (*(end - 1) != '\\' && *(end - 1) != '/')) {
+        *end = '\0';
+    }  
+}
+
 
 //----------------------------------------------------------
 int main(int argc, char* argv[])
 {
   int arg;
+  char *ext = ".hex";
 
   if (argv[1] == NULL)
   {
@@ -252,9 +299,19 @@ int main(int argc, char* argv[])
     printf("\r\nUse: ptp2hex <filein>.ptp\r\n");
     return 2;
   }
+
   snprintf(hexName, sizeof(hexName), "%s", ptpName);
-  hexName[strlen(ptpName)-4] = 0;
-  snprintf(hexName, sizeof(hexName), "%s.hex", hexName);
+
+  strip_ext(hexName);
+  // Shorten the base file name to make room for the extension if needed.
+  // No, the loop isn't really effencient but this covers a rare edge case and
+  // makes the math easier.
+  while (strlen(hexName) + strlen(ext) >= sizeof(hexName) +1 )
+  {
+    hexName[strlen(hexName) -1] = 0;
+  }
+  strcat(hexName, ext);
+  
   printf("hexName is [%s]\r\n", hexName);
 
   processFile(ptpName, hexName);
